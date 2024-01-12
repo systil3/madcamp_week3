@@ -59,7 +59,7 @@ public class Enemy : MonoBehaviour
                 }
                 else
                 {
-                    print(distanceToPlayer + " ||  " + combatRange);
+                    //print(distanceToPlayer + " ||  " + combatRange);
                     Vector3 direction = player.position - transform.position;
                     // 플레이어를 향해 회전
                     /*Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));

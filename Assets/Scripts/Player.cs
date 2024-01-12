@@ -1,79 +1,85 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
 public class Player : MonoBehaviour
 {
-    //상태창
-    public int health = 100;
+    // 발사 소리
+    public AudioClip GunshotSound;
 
-    //이동 관련
-    public float Speed = 2.0f;
-    public float RotationSpeed = 20000.0f;
-    public float jumpForce = 15.0f;
+    // 상태창
+    public int Health = 100;
+
+    // 이동 관련
+    public float Speed = 20.0f;
+    public float RotationSpeed = 3.0f;
+    public float JumpForce = 15.0f;
+
+    // 총알 관련
+    public GameObject BulletObject;
+    public float BulletForce = 20.0f;
+    public float MaxShootDelay = 0.15f;
 
     Rigidbody body;
 
-    float h, v;
-
+    bool isAccelerating = false;
     bool isJumping = false;
-    private float xRotate, yRotate, xRotateMove, yRotateMove;
 
-    public AudioClip gunshotSound;  // 발사 소리
-    private AudioSource audioSource; // AudioSource 컴포넌트
-    void Start()
+    float shootDelay = 0;
+
+    float xRotate, yRotate, xRotateMove, yRotateMove;
+
+    AudioSource AudioSource; // AudioSource 컴포넌트
+    
+    void Awake()
     {   
         //마우스 포인터 잠금 및 숨김
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
         body = GetComponent<Rigidbody>();
-        jumpForce = 15.0f;
+        JumpForce = 15.0f;
         isJumping = false;
 
         // AudioSource 컴포넌트 초기화
-        audioSource = GetComponent<AudioSource>();
-        string path = "Assets/Custom_Yung/PistolShot1.wav";
+        AudioSource = GetComponent<AudioSource>();
         #if UNITY_EDITOR
-                gunshotSound = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+            GunshotSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Custom_Yung/PistolShot1.wav");
         #endif
+    }
+
+    void Update()
+    {
+        Shoot();
     }
 
     void FixedUpdate()
     {
-        // 마우스 클릭 시 발사 소리 재생 + 실제 총알 발사(Todo)
-        if (Input.GetMouseButtonDown(0))
-        {
-            Shoot();
-        }
         //print("speed: " + body.velocity.magnitude);
         Move();
         Jump();
+    }
+
+    void LateUpdate()
+    {
         RotateWithMouse();
     }
 
     void Move()
     {
-        h = Input.GetAxis("Horizontal");
-        v = Input.GetAxis("Vertical");
+        if (isAccelerating) return;
 
-        Vector3 dir = new Vector3(h, 0, v*0.75f);
-        Vector3 transformed_dir = TransformDirectionRelativeToPlayer(dir);
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
+
+        Vector3 dir = new Vector3(h, 0, v * 0.75f);
+        Vector3 transformedDir = TransformDirectionRelativeToPlayer(dir);
 
         if (!(h == 0 && v == 0))
         {     
-            //print(GameManager.instance.getIfAccelerating() );
-            
-            //transform.position += transformed_dir * Speed * Time.deltaTime;
-            //가속 중이 아니라면 조작 가능
-            if(true) {
-                Vector3 newVelocity = new Vector3(
-                    transformed_dir.x * Speed, body.velocity.y, transformed_dir.z * Speed);
-                body.velocity = newVelocity;
-            }
+            body.velocity = new Vector3(transformedDir.x * Speed, body.velocity.y, transformedDir.z * Speed);
         }
     }
+
     Vector3 TransformDirectionRelativeToPlayer(Vector3 direction)
     {
         // 플레이어의 현재 회전을 가져옴
@@ -89,7 +95,7 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space) && !isJumping)
         {
-            body.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            body.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
             isJumping = true;
         }
     }
@@ -115,30 +121,46 @@ public class Player : MonoBehaviour
     void Shoot()
     {
         // 총 발사 로직을 여기에 추가 (필요에 따라 총구 이펙트, 총알 등도 추가 가능)
-
-
-        // 발사 소리 재생
-        if (gunshotSound != null)
+        if (Input.GetButton("Fire1") && shootDelay > MaxShootDelay)
         {
-            audioSource.PlayOneShot(gunshotSound);
+            Vector3 forward = TransformDirectionRelativeToPlayer(Vector3.forward);
+            GameObject bullet = Instantiate(BulletObject, transform.position + forward * 0.7f, transform.rotation);
+            Rigidbody rigid = bullet.GetComponent<Rigidbody>();
+            rigid.AddForce(forward * BulletForce, ForceMode.Impulse);
+
+            // 발사 소리 재생
+            if (GunshotSound != null)
+            {
+                AudioSource.PlayOneShot(GunshotSound);
+            }
+            shootDelay = 0;
         }
+
+        shootDelay += Time.deltaTime;
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Floor")
+        Debug.Log(collision.gameObject.tag);
+        if (collision.gameObject.CompareTag("Floor"))
         {
             isJumping = false;
-        }  else if (collision.gameObject.tag == "Accel")
+        }
+    }
+
+    void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.CompareTag("Accel"))
         {
-        
+            isAccelerating = true;
         } 
     }
-    void OnCollisionExit(Collision collision)
+
+    void OnTriggerExit(Collider collision)
     {
-        if (collision.gameObject.tag == "Accel")
+        if (collision.gameObject.CompareTag("Accel"))
         {
-            Debug.Log("Collision ended with OtherObject");
+            isAccelerating = false;
         }
     }
 }

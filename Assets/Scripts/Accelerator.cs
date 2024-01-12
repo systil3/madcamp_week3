@@ -12,13 +12,12 @@ public class Accelerator : MonoBehaviour
 
     // 충돌이 발생했을 때 호출되는 함수
     void OnTriggerEnter(Collider other)
-    {          
-
+    {
         if (other.CompareTag("Player"))
         {
-            GameManager.instance.setIfAccelerating(true);
+            //GameManager.instance.setIfAccelerating(true);
             StartCoroutine(ApplyAcceleration(other.GetComponent<Rigidbody>()));
-            GameManager.instance.setIfAccelerating(false);
+            //GameManager.instance.setIfAccelerating(false);
         }
     }
 
