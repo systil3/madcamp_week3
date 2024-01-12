@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     public float Speed = 20.0f;
     public float RotationSpeed = 3.0f;
     public float JumpForce = 15.0f;
+    public bool IsAccelerating = false;
 
     // 총알 관련
     public GameObject BulletObject;
@@ -22,7 +23,6 @@ public class Player : MonoBehaviour
 
     Rigidbody body;
 
-    bool isAccelerating = false;
     bool isJumping = false;
 
     float shootDelay = 0;
@@ -41,7 +41,7 @@ public class Player : MonoBehaviour
     public Transform pistolTransform;
 
     void Awake()
-    {   
+    {
         //마우스 포인터 잠금 및 숨김
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -52,10 +52,10 @@ public class Player : MonoBehaviour
 
         // AudioSource 컴포넌트 초기화
         audioSource = GetComponent<AudioSource>();
-        
-        #if UNITY_EDITOR
-            GunshotSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Custom_Yung/PistolShot1.wav");
-        #endif
+
+#if UNITY_EDITOR
+        GunshotSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Custom_Yung/PistolShot1.wav");
+#endif
 
         if (pistolTransform == null)
         {
@@ -83,16 +83,15 @@ public class Player : MonoBehaviour
 
     void Move()
     {
-        if (isAccelerating) return;
+        if (IsAccelerating) return;
 
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
-        Vector3 dir = new Vector3(h, 0, v * 0.75f);
-        Vector3 transformedDir = TransformDirectionRelativeToPlayer(dir);
-
         if (!(h == 0 && v == 0))
-        {     
+        {
+            Vector3 dir = new Vector3(h, 0, v * 0.75f);
+            Vector3 transformedDir = TransformDirectionRelativeToPlayer(dir);
             body.velocity = new Vector3(transformedDir.x * Speed, body.velocity.y, transformedDir.z * Speed);
         }
     }
@@ -125,20 +124,20 @@ public class Player : MonoBehaviour
         yRotate = yRotate + yRotateMove;
         //xRotate = transform.eulerAngles.x + xRotateMove; 
         xRotate = xRotate + xRotateMove;
-        
+
         xRotate = Mathf.Clamp(xRotate, -90, 90); // 위, 아래 고정
-        
+
         //transform.eulerAngles = new Vector3(xRotate, yRotate, 0);
         //float mouseX = Input.GetAxis("Mouse X") * Time.deltaTime * RotationSpeed;
         //transform.RotateAround(Target.transform.position, Vector3.up, yRotateMove);
-        
+
         transform.eulerAngles = new Vector3(xRotate, yRotate, 0);
     }
 
     void Shoot()
     {
         // 총 발사 로직을 여기에 추가 (필요에 따라 총구 이펙트, 총알 등도 추가 가능)
-        if (Input.GetButton("Fire1") && shootDelay > MaxShootDelay)
+        if (Input.GetButtonDown("Fire1") && shootDelay > MaxShootDelay)
         {
             Vector3 forward = TransformDirectionRelativeToPlayer(Vector3.forward);
             GameObject bullet = Instantiate(BulletObject, transform.position + forward * 0.7f, transform.rotation);
@@ -188,7 +187,7 @@ public class Player : MonoBehaviour
             body.velocity += recoilOffset;
             elapsedTime += Time.deltaTime;
             yield return null;
-        }*/ 
+        }*/
 
         yield return new WaitForSeconds(recoilDuration);
         // 반동 종료
@@ -203,7 +202,6 @@ public class Player : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(collision.gameObject.tag);
         if (collision.gameObject.CompareTag("Floor"))
         {
             isJumping = false;
@@ -214,15 +212,7 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Accel"))
         {
-            isAccelerating = true;
-        } 
-    }
-
-    void OnTriggerExit(Collider collision)
-    {
-        if (collision.gameObject.CompareTag("Accel"))
-        {
-            isAccelerating = false;
+            IsAccelerating = true;
         }
     }
 }

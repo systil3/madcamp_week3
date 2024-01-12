@@ -6,18 +6,17 @@ public class Accelerator : MonoBehaviour
 {
     // 가속도를 가할 시간과 가속도 크기
 
-    public float accelerateDuration = 0.3f;
-    public float maintainDuration = 2f;
-    public float accelerationSpeed = 10.0f;
+    public float AccelerateDuration = 0.5f;
+    public float MaintainDuration = 1f;
+    public float AccelerationSpeed = 30.0f;
 
     // 충돌이 발생했을 때 호출되는 함수
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            //GameManager.instance.setIfAccelerating(true);
-            StartCoroutine(ApplyAcceleration(other.GetComponent<Rigidbody>()));
-            //GameManager.instance.setIfAccelerating(false);
+            Rigidbody playerRigidbody = other.GetComponent<Rigidbody>();
+            StartCoroutine(ApplyAcceleration(playerRigidbody));
         }
     }
 
@@ -28,18 +27,18 @@ public class Accelerator : MonoBehaviour
         float startTime = Time.time;
         float elapsedTime = 0.0f;
         Vector3 initialVelocity = playerRigidbody.velocity;
-        Vector3 acceleratedVelocity = -transform.forward * accelerationSpeed;
+        Vector3 acceleratedVelocity = -transform.forward * AccelerationSpeed;
 
-        while (elapsedTime < accelerateDuration)
+        while (elapsedTime < AccelerateDuration)
         {
-            float t = Mathf.SmoothStep(0.0f, 1.0f, elapsedTime / accelerateDuration);
+            float t = Mathf.SmoothStep(0.0f, 1.0f, elapsedTime / AccelerateDuration);
             playerRigidbody.velocity = Vector3.Lerp(initialVelocity, acceleratedVelocity, t);
             elapsedTime += Time.deltaTime;
         }
 
         playerRigidbody.velocity = acceleratedVelocity;
-        yield return new WaitForSeconds(maintainDuration);
+        yield return new WaitForSeconds(MaintainDuration);
         // 일정 속도로 유지
-        
+        playerRigidbody.GetComponent<Player>().IsAccelerating = false;
     }
 }
