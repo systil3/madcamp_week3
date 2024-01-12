@@ -22,6 +22,16 @@ public class Player : MonoBehaviour
 
     public AudioClip gunshotSound;  // 발사 소리
     private AudioSource audioSource; // AudioSource 컴포넌트
+
+    //반동 제어
+    private Vector3 originalPosition;
+    private bool isRecoiling = false;
+    public float recoilForce = 20.0f; // 반동 힘
+    public float recoilDuration = 0.5f;
+
+    //피스톨 객체 찾기
+    public Transform pistolTransform;
+
     void Start()
     {   
         //마우스 포인터 잠금 및 숨김
@@ -38,6 +48,12 @@ public class Player : MonoBehaviour
         #if UNITY_EDITOR
                 gunshotSound = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
         #endif
+
+        if (pistolTransform == null)
+        {
+            // 만약 pistolTransform이 직접 Inspector에서 설정되지 않았다면 자식 오브젝트에서 찾아서 할당
+            pistolTransform = transform.Find("Pistol");
+        }
     }
 
     void FixedUpdate()
@@ -121,7 +137,50 @@ public class Player : MonoBehaviour
         if (gunshotSound != null)
         {
             audioSource.PlayOneShot(gunshotSound);
-        }
+        } StartRecoil();
+    }
+    void StartRecoil()
+    {
+        // 반동 힘을 impulse로 적용
+        body.AddForce(-transform.forward * recoilForce, ForceMode.Impulse);
+
+        isRecoiling = true; // 반동이 시작되었음을 표시
+
+        StartCoroutine(RecoilCoroutine()); //velocity로 적용
+        //Recoil(); //Impulse로 적용
+    }
+
+    IEnumerator RecoilCoroutine()
+    {
+        float elapsedTime = 0f;
+
+        // 플레이어에 대해 반동을 가함
+        body.velocity -= transform.forward * recoilForce;
+
+        /*while (elapsedTime < recoilDuration)
+        {
+            // 이징 적용
+            float t = elapsedTime / recoilDuration;
+            float easedT = Mathf.SmoothStep(0f, 1f, t);
+
+            // 반동 힘 계산
+            Vector3 recoilOffset = -transform.forward * recoilForce * Time.deltaTime * easedT;
+
+            // 플레이어에게 반동 힘 적용
+            body.velocity += recoilOffset;
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }*/ 
+
+        yield return new WaitForSeconds(recoilDuration);
+        // 반동 종료
+        isRecoiling = false;
+    }
+
+    void Recoil()
+    {
+        // 반동 중일 때 필요한 작업을 수행
+        // (예: 화면 흔들림 효과 등)
     }
 
     void OnCollisionEnter(Collision collision)
