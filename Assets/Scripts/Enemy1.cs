@@ -13,6 +13,8 @@ public class Enemy : MonoBehaviour
     public Transform player;
 
     private Rigidbody rb;
+    //파티클 관리
+    private ParticleSystem particleSystem;
     
     private enum EnemyState
     {
@@ -35,8 +37,19 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError("Player not found. Make sure the Player object has the correct name.");
         }
-    }
 
+        // 파티클 시스템 컴포넌트 가져오기
+        particleSystem = GetComponent<ParticleSystem>();
+
+        // 파티클 좌표를 월드 좌표 공간으로 설정
+        SetSimulationSpaceToWorld();
+    }
+    void SetSimulationSpaceToWorld()
+    {
+        var mainModule = particleSystem.main;
+        mainModule.simulationSpace = ParticleSystemSimulationSpace.World;
+    }
+    
     void Update()
     {
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
