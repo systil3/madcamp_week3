@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class Enemy : MonoBehaviour
 
     private Rigidbody rb;
     private ParticleSystem ps;
+    private NavMeshAgent navMeshAgent;
 
     private enum EnemyState
     {
@@ -28,6 +30,7 @@ public class Enemy : MonoBehaviour
         currentState = EnemyState.Dormant;
         rb = GetComponent<Rigidbody>();
         ps = GetComponent<ParticleSystem>();
+        navMeshAgent = GetComponent<NavMeshAgent>();
 
         // 파티클 좌표를 월드 좌표 공간으로 설정
         SetSimulationSpaceToWorld();
@@ -41,6 +44,8 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
+        navMeshAgent.SetDestination(Player.position);
+        return;
         float distanceToPlayer = Vector3.Distance(transform.position, Player.position);
 
         switch (currentState)
