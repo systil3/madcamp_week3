@@ -6,7 +6,7 @@ TagManager:
   tags:
   - Floor
   - PlayerBullet
-  - Fire
+  - Enemy
   - Accel
   layers:
   - Default

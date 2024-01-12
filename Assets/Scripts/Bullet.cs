@@ -5,13 +5,15 @@ public class Bullet : MonoBehaviour
     public float RemoveDistance = 200.0f;
 
     GameObject player;
-    new Renderer renderer;
+    Rigidbody body;
+    Renderer modelRenderer;
     ParticleSystem exp;
 
     void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        renderer = GetComponent<Renderer>();
+        body = GetComponent<Rigidbody>();
+        modelRenderer = transform.Find("default").GetComponent<Renderer>();
         exp = GetComponent<ParticleSystem>();
     }
 
@@ -28,7 +30,8 @@ public class Bullet : MonoBehaviour
         if (!other.gameObject.CompareTag("Player"))
         {
             exp.Play();
-            renderer.enabled = false;
+            modelRenderer.enabled = false;
+            body.velocity = Vector3.zero;
             Destroy(gameObject, exp.main.duration);
         }
     }

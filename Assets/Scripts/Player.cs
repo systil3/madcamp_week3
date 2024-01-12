@@ -163,7 +163,7 @@ public class Player : MonoBehaviour
 
         isRecoiling = true; // 반동이 시작되었음을 표시
 
-        StartCoroutine(RecoilCoroutine()); //velocity로 적용
+        //StartCoroutine(RecoilCoroutine()); //velocity로 적용
         //Recoil(); //Impulse로 적용
     }
 
