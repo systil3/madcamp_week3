@@ -89,7 +89,7 @@ public class GameManager : MonoBehaviour
     {
         if (playerCurrentHealth > 0)
         {
-            playerCurrentHealth -= damage;
+            playerCurrentHealth = Mathf.Max(playerCurrentHealth - damage, 0);
             if (IsPlayerDead) PlayerDead();
         }
     }
@@ -98,7 +98,7 @@ public class GameManager : MonoBehaviour
     {
         if (enemyCurrentHealth > 0)
         {
-            enemyCurrentHealth -= damage;
+            enemyCurrentHealth = Mathf.Max(enemyCurrentHealth - damage, 0);
             if (IsEnemyDead) EnemyDead();
         }
     }
