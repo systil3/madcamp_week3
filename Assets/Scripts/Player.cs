@@ -4,11 +4,10 @@ using System.Collections;
 
 public class Player : MonoBehaviour
 {
+    public GameManager GameManager;
+
     // 발사 소리
     public AudioClip GunshotSound;
-
-    // 상태창
-    public int Health = 100;
 
     // 이동 관련
     public float Speed = 20.0f;
@@ -22,14 +21,11 @@ public class Player : MonoBehaviour
     public float MaxShootDelay = 0.15f;
 
     Rigidbody body;
+    AudioSource audioSource; // AudioSource 컴포넌트
 
     bool isJumping = false;
-
     float shootDelay = 0;
-
     float xRotate, yRotate, xRotateMove, yRotateMove;
-
-    AudioSource audioSource; // AudioSource 컴포넌트
 
     //반동 제어
     private Vector3 originalPosition;
@@ -42,15 +38,7 @@ public class Player : MonoBehaviour
 
     void Awake()
     {
-        //마우스 포인터 잠금 및 숨김
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
         body = GetComponent<Rigidbody>();
-        JumpForce = 15.0f;
-        isJumping = false;
-
-        // AudioSource 컴포넌트 초기화
         audioSource = GetComponent<AudioSource>();
 
 #if UNITY_EDITOR
@@ -66,11 +54,13 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.IsPlayerDead) return;
         Shoot();
     }
 
     void FixedUpdate()
     {
+        if (GameManager.IsPlayerDead) return;
         //print("speed: " + body.velocity.magnitude);
         Move();
         Jump();
@@ -78,6 +68,7 @@ public class Player : MonoBehaviour
 
     void LateUpdate()
     {
+        if (GameManager.IsPlayerDead) return;
         RotateWithMouse();
     }
 
@@ -140,7 +131,7 @@ public class Player : MonoBehaviour
         if (Input.GetButtonDown("Fire1") && shootDelay > MaxShootDelay)
         {
             Vector3 forward = TransformDirectionRelativeToPlayer(Vector3.forward);
-            GameObject bullet = Instantiate(BulletObject, transform.position + forward * 0.7f, transform.rotation);
+            GameObject bullet = Instantiate(BulletObject, transform.position + (forward + Vector3.up) * 0.8f, transform.rotation);
             Rigidbody rigid = bullet.GetComponent<Rigidbody>();
             rigid.AddForce(forward * BulletForce, ForceMode.Impulse);
 

@@ -2,18 +2,18 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    public float Damage = 10.0f;
     public float RemoveDistance = 200.0f;
 
     GameObject player;
     Rigidbody body;
-    Renderer modelRenderer;
     ParticleSystem exp;
+    bool alreadyDamaged = false;
 
     void Awake()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         body = GetComponent<Rigidbody>();
-        modelRenderer = transform.Find("default").GetComponent<Renderer>();
         exp = GetComponent<ParticleSystem>();
     }
 
@@ -27,11 +27,17 @@ public class Bullet : MonoBehaviour
 
     void OnCollisionEnter(Collision other)
     {
-        if (!other.gameObject.CompareTag("Player"))
+        if (!alreadyDamaged && !other.gameObject.CompareTag("Player"))
         {
+            if (other.gameObject.CompareTag("Enemy"))
+            {
+                other.gameObject.GetComponent<Enemy>().TakeDamage(Damage);
+            }
+
             exp.Play();
-            modelRenderer.enabled = false;
+            transform.Find("default").GetComponent<Renderer>().enabled = false;
             body.velocity = Vector3.zero;
+            alreadyDamaged = true;
             Destroy(gameObject, exp.main.duration);
         }
     }
