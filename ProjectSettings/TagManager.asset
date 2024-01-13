@@ -8,6 +8,8 @@ TagManager:
   - PlayerBullet
   - Fire
   - Accel
+  - Wall
+  - BreakableWall
   layers:
   - Default
   - TransparentFX

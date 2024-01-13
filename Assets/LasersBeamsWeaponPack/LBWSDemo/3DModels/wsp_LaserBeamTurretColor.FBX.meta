@@ -1,0 +1,153 @@
+fileFormatVersion: 2
+guid: c9b81ad7e9b89dc449c349036531b071
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: LaserBeamTurret
+    100002: LBTBase
+    100004: TurretColoring
+    100006: //RootNode
+    100008: Level01
+    100010: Level02
+    100012: Level03
+    100014: Level04
+    100016: Level05
+    100018: Level06
+    100020: Level07
+    100022: Level08
+    100024: Level09
+    100026: Level10
+    100028: TurretLevelIndicatorBase
+    100030: WSPLaserBeamTurret
+    100032: TurretPlatform01
+    400000: LaserBeamTurret
+    400002: LBTBase
+    400004: TurretColoring
+    400006: //RootNode
+    400008: Level01
+    400010: Level02
+    400012: Level03
+    400014: Level04
+    400016: Level05
+    400018: Level06
+    400020: Level07
+    400022: Level08
+    400024: Level09
+    400026: Level10
+    400028: TurretLevelIndicatorBase
+    400030: WSPLaserBeamTurret
+    400032: TurretPlatform01
+    2300000: LaserBeamTurret
+    2300002: LBTBase
+    2300004: TurretColoring
+    2300006: Level01
+    2300008: Level02
+    2300010: Level03
+    2300012: Level04
+    2300014: Level05
+    2300016: Level06
+    2300018: Level07
+    2300020: Level08
+    2300022: Level09
+    2300024: Level10
+    2300026: TurretLevelIndicatorBase
+    2300028: TurretPlatform01
+    3300000: LaserBeamTurret
+    3300002: LBTBase
+    3300004: TurretColoring
+    3300006: Level01
+    3300008: Level02
+    3300010: Level03
+    3300012: Level04
+    3300014: Level05
+    3300016: Level06
+    3300018: Level07
+    3300020: Level08
+    3300022: Level09
+    3300024: Level10
+    3300026: TurretLevelIndicatorBase
+    3300028: TurretPlatform01
+    4300000: LBTBase
+    4300002: LaserBeamTurret
+    4300004: TurretColoring
+    4300006: TurretLevelIndicatorBase
+    4300008: Level01
+    4300010: Level02
+    4300012: Level03
+    4300014: Level04
+    4300016: Level05
+    4300018: Level06
+    4300020: Level07
+    4300022: Level08
+    4300024: Level09
+    4300026: Level10
+    4300028: TurretPlatform01
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.01
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -6,9 +6,9 @@ public class Accelerator : MonoBehaviour
 {
     // 가속도를 가할 시간과 가속도 크기
 
-    public float accelerateDuration = 0.3f;
-    public float maintainDuration = 2f;
-    public float accelerationSpeed = 10.0f;
+    public float accelerateDuration = 0.5f;
+    public float maintainDuration = 2;
+    public float accelerationSpeed = 20.0f;
 
     // 충돌이 발생했을 때 호출되는 함수
     void OnTriggerEnter(Collider other)
