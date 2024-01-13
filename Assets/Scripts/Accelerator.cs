@@ -23,8 +23,8 @@ public class Accelerator : MonoBehaviour
     IEnumerator ApplyAcceleration(Rigidbody playerRigidbody)
     {
         // 현재 속도를 서서히 가속시킴
-        float startTime = Time.time;
         float elapsedTime = 0.0f;
+
         Vector3 initialVelocity = playerRigidbody.velocity;
         Vector3 acceleratedVelocity = -transform.forward * AccelerationSpeed;
 

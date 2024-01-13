@@ -6,8 +6,13 @@ public class Player : MonoBehaviour
 {
     public GameManager GameManager;
 
+    //피스톨 객체 찾기
+    public Transform pistolTransform;
+
     // 발사 소리
     public AudioClip GunshotSound;
+
+    public LayerMask GroundLayer;
 
     // 이동 관련
     public float Speed = 20.0f;
@@ -17,8 +22,15 @@ public class Player : MonoBehaviour
 
     // 총알 관련
     public GameObject BulletObject;
-    public float BulletForce = 800.0f;
+    public float BulletForce = 50.0f;
     public float MaxShootDelay = 0.05f;
+
+    //반동 제어
+    public float RecoilForce = 15.0f; // 반동 힘
+    public float RecoilDuration = 0.5f;
+    Vector3 originalPosition;
+    Vector3 wallNormal;
+    bool isRecoiling = false;
 
     Rigidbody body;
     AudioSource audioSource; // AudioSource 컴포넌트
@@ -27,16 +39,6 @@ public class Player : MonoBehaviour
     bool isClimbing = false;
     float shootDelay = 0;
     float xRotate, yRotate, xRotateMove, yRotateMove;
-
-    //반동 제어
-    private Vector3 originalPosition;
-    private Vector3 wallNormal;
-    private bool isRecoiling = false;
-    public float recoilForce = 2.0f; // 반동 힘
-    public float recoilDuration = 0.1f;
-
-    //피스톨 객체 찾기
-    public Transform pistolTransform;
 
     void Awake()
     {
@@ -56,20 +58,22 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.IsPlayerDead) return;
+        if (GameManager.PlayerHealth.IsDead) return;
+        GameManager.UpdateEnemyHealthIndex(transform);
+        isJumping = !Physics.Raycast(transform.position, Vector3.down, 2.0f, GroundLayer);
         Shoot();
     }
 
     void FixedUpdate()
     {
-        if (GameManager.IsPlayerDead) return;
+        if (GameManager.PlayerHealth.IsDead) return;
         Move();
         Jump();
     }
 
     void LateUpdate()
     {
-        if (GameManager.IsPlayerDead) return;
+        if (GameManager.PlayerHealth.IsDead) return;
         RotateWithMouse();
     }
 
@@ -106,7 +110,6 @@ public class Player : MonoBehaviour
             if (Input.GetKey(KeyCode.Space) && !isJumping)
             {
                 body.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
-                isJumping = true;
             }
         }
         else
@@ -118,16 +121,17 @@ public class Player : MonoBehaviour
                 // 기존 속도를 초기화하고 반대 방향으로 힘을 가하여 점프
                 body.velocity = new Vector3(0f, 0f, 0f);
                 body.AddForce(jumpDirection * JumpForce, ForceMode.Impulse);
-                print("walljump, wall normal :" + wallNormal + "jump speed: " + body.velocity);
-                StartCoroutine(sleep());
+                Debug.Log("walljump, wall normal :" + wallNormal + "jump speed: " + body.velocity);
+                StartCoroutine(Sleep());
             }
         }
     }
 
-    IEnumerator sleep()
+    IEnumerator Sleep()
     {
         yield return new WaitForSeconds(0.3f);
     }
+
     void RotateWithMouse()
     {
         xRotateMove = -Input.GetAxis("Mouse Y") * RotationSpeed;
@@ -156,7 +160,8 @@ public class Player : MonoBehaviour
             {
                 audioSource.PlayOneShot(GunshotSound);
             }
-            //StartRecoil();
+
+            StartRecoil();
             shootDelay = 0;
         }
 
@@ -165,21 +170,22 @@ public class Player : MonoBehaviour
 
     void StartRecoil()
     {
-        // 반동 힘을 impulse로 적용
-        body.AddForce(-transform.forward * recoilForce, ForceMode.Impulse);
+        if (isRecoiling) return;
 
         isRecoiling = true; // 반동이 시작되었음을 표시
+        // 반동 힘을 impulse로 적용
+        body.AddForce(-transform.forward.x * RecoilForce, Mathf.Min(-transform.forward.y * RecoilForce, 1.0f), -transform.forward.z * RecoilForce, ForceMode.Impulse);
 
-        //StartCoroutine(RecoilCoroutine()); //velocity로 적용
+        StartCoroutine(RecoilCoroutine()); //velocity로 적용
         //Recoil(); //Impulse로 적용
     }
 
     IEnumerator RecoilCoroutine()
     {
-        float elapsedTime = 0f;
+        //float elapsedTime = 0f;
 
         // 플레이어에 대해 반동을 가함
-        body.velocity -= transform.forward * recoilForce;
+        //body.velocity -= transform.forward * recoilForce;
 
         /*while (elapsedTime < recoilDuration)
         {
@@ -196,7 +202,7 @@ public class Player : MonoBehaviour
             yield return null;
         }*/
 
-        yield return new WaitForSeconds(recoilDuration);
+        yield return new WaitForSeconds(RecoilDuration);
         // 반동 종료
         isRecoiling = false;
     }
@@ -209,16 +215,12 @@ public class Player : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Floor"))
-        {
-            isJumping = false;
-        }
         if (collision.gameObject.CompareTag("Wall"))
         {
-            isJumping = false;
             isClimbing = false; //벽을 타고 있는가?(벽의 측면에 충돌 중인가?)
         }
     }
+
     void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.CompareTag("Wall"))
@@ -226,6 +228,7 @@ public class Player : MonoBehaviour
             isClimbing = false;
         }
     }
+
     void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("Wall")) //벽 점프
@@ -235,7 +238,7 @@ public class Player : MonoBehaviour
             {
                 if (Vector3.Dot(contact.normal, Vector3.up) < 0.1f)
                 {
-                    //print("side wall collision, wall normal" + contact.normal);
+                    //Debug.Log("side wall collision, wall normal" + contact.normal);
                     isClimbing = true;
                     // 충돌 지점의 노말 벡터가 거의 수직이면(측면 충돌), 월 점프 가능
                     wallNormal = contact.normal;

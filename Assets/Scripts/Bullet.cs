@@ -31,7 +31,8 @@ public class Bullet : MonoBehaviour
         {
             if (other.gameObject.CompareTag("Enemy"))
             {
-                other.gameObject.GetComponent<Enemy>().TakeDamage(Damage);
+                EnemyBase enemy = other.gameObject.GetComponent<EnemyBase>();
+                enemy.TakeDamage(Damage);
             }
 
             exp.Play();

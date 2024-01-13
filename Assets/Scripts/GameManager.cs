@@ -1,4 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -6,22 +9,12 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public Text AlertText;
-
-    public bool IsPlayerDead => playerCurrentHealth <= 0;
-    public float PlayerMaxHealth = 100f;
-    public Slider PlayerHealthSlider;
-    public Text PlayerHealthText;
-
-    public bool IsEnemyDead => enemyCurrentHealth <= 0;
-    public float EnemyMaxHealth = 100f;
+    public Health PlayerHealth;
+    public List<EnemyBase> Enemies;
     public Slider EnemyHealthSlider;
     public Text EnemyHealthText;
 
-    GameObject playerHealthFillArea;
-    float playerCurrentHealth;
-
-    GameObject enemyHealthFillArea;
-    float enemyCurrentHealth;
+    int enemyHealthIndex = 0;
 
     void Awake()
     {
@@ -30,35 +23,62 @@ public class GameManager : MonoBehaviour
         Cursor.visible = false;
 
         AlertText.text = "";
-        playerCurrentHealth = PlayerMaxHealth;
-        enemyCurrentHealth = EnemyMaxHealth;
-        playerHealthFillArea = PlayerHealthSlider.transform.Find("Fill Area").gameObject;
-        enemyHealthFillArea = EnemyHealthSlider.transform.Find("Fill Area").gameObject;
     }
 
     void Update()
     {
-        PlayerHealthSlider.value = playerCurrentHealth / PlayerMaxHealth;
-        PlayerHealthText.text = $"{playerCurrentHealth} / {PlayerMaxHealth}";
-        playerHealthFillArea.SetActive(!IsPlayerDead);
+        PlayerHealth.Update();
 
-        EnemyHealthSlider.value = enemyCurrentHealth / EnemyMaxHealth;
-        EnemyHealthText.text = $"{enemyCurrentHealth} / {EnemyMaxHealth}";
-        enemyHealthFillArea.SetActive(!IsEnemyDead);
+        if (enemyHealthIndex >= 0)
+        {
+            for (int i = 0; i < Enemies.Count; i++)
+            {
+                Health health = Enemies[i].Health;
+
+                if (i == enemyHealthIndex)
+                {
+                    health.HealthSlider = EnemyHealthSlider;
+                    health.HealthText = EnemyHealthText;
+                    health.Update();
+                }
+                else
+                {
+                    health.HealthSlider = null;
+                    health.HealthText = null;
+                }
+            }
+
+            Enemies[enemyHealthIndex].Health.Update();
+        }
+    }
+
+    public void UpdateEnemyHealthIndex(Transform player)
+    {
+        int minIndex = -1;
+        float minDistance = float.MaxValue;
+
+        for (int i = 0; i < Enemies.Count; i++)
+        {
+            if (Enemies[i].IsDestroyed()) continue;
+            float distance = Vector3.Distance(Enemies[i].GetComponent<Transform>().position, player.position);
+            if (distance < minDistance)
+            {
+                minIndex = i;
+                minDistance = distance;
+            }
+        }
+
+        enemyHealthIndex = minIndex;
     }
 
     public void SetPlayerHealth(float maxHealth)
     {
-        PlayerHealthSlider.value = 1;
-        PlayerMaxHealth = maxHealth;
-        playerCurrentHealth = PlayerMaxHealth;
+        PlayerHealth.SetHealth(maxHealth);
     }
 
-    public void SetEnemyHealth(float maxHealth)
+    public void SetEnemyHealth(int index, float maxHealth)
     {
-        EnemyHealthSlider.value = 1;
-        EnemyMaxHealth = maxHealth;
-        enemyCurrentHealth = EnemyMaxHealth;
+        Enemies[index].Health.SetHealth(maxHealth);
     }
 
     void PlayerDead()
@@ -66,9 +86,12 @@ public class GameManager : MonoBehaviour
         StartCoroutine(PlayerDeadCoroutine());
     }
 
-    void EnemyDead()
+    void EnemyDead(Health health)
     {
-        AlertText.text = "You cleared!";
+        if (Enemies.Count(e => !e.Health.IsDead) == 0)
+        {
+            AlertText.text = "You cleared!";
+        }
     }
 
     IEnumerator PlayerDeadCoroutine()
@@ -79,27 +102,26 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(1.0f);
         }
         AlertText.text = "";
-        SetPlayerHealth(100.0f);
-        SetEnemyHealth(100.0f);
+        SetPlayerHealth(PlayerHealth.MaxHealth);
+
+        for (int i = 0; i < Enemies.Count; i++)
+        {
+            SetEnemyHealth(i, Enemies[i].Health.MaxHealth);
+        }
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-
-    public void DamageToPlayer(float damage)
+    public bool DamageToPlayer(float damage)
     {
-        if (playerCurrentHealth > 0)
-        {
-            playerCurrentHealth = Mathf.Max(playerCurrentHealth - damage, 0);
-            if (IsPlayerDead) PlayerDead();
-        }
+        PlayerHealth.Damage(damage);
+        if (PlayerHealth.IsDead) PlayerDead();
+        return PlayerHealth.IsDead;
     }
 
-    public void DamageToEnemy(float damage)
+    public bool DamageToEnemy(Health health, float damage)
     {
-        if (enemyCurrentHealth > 0)
-        {
-            enemyCurrentHealth = Mathf.Max(enemyCurrentHealth - damage, 0);
-            if (IsEnemyDead) EnemyDead();
-        }
+        health.Damage(damage);
+        if (health.IsDead) EnemyDead(health);
+        return health.IsDead;
     }
 }
