@@ -17,21 +17,23 @@ public class Player : MonoBehaviour
 
     // 총알 관련
     public GameObject BulletObject;
-    public float BulletForce = 20.0f;
-    public float MaxShootDelay = 0.15f;
+    public float BulletForce = 800.0f;
+    public float MaxShootDelay = 0.05f;
 
     Rigidbody body;
     AudioSource audioSource; // AudioSource 컴포넌트
 
     bool isJumping = false;
+    bool isClimbing = false;
     float shootDelay = 0;
     float xRotate, yRotate, xRotateMove, yRotateMove;
 
     //반동 제어
     private Vector3 originalPosition;
+    private Vector3 wallNormal;
     private bool isRecoiling = false;
-    public float recoilForce = 20.0f; // 반동 힘
-    public float recoilDuration = 0.5f;
+    public float recoilForce = 2.0f; // 반동 힘
+    public float recoilDuration = 0.1f;
 
     //피스톨 객체 찾기
     public Transform pistolTransform;
@@ -61,7 +63,6 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         if (GameManager.IsPlayerDead) return;
-        //print("speed: " + body.velocity.magnitude);
         Move();
         Jump();
     }
@@ -100,13 +101,33 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
-        if (Input.GetKey(KeyCode.Space) && !isJumping)
-        {
-            body.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
-            isJumping = true;
+        if (!isClimbing)
+        { //벽 타는 중이 아니면 일반 점프
+            if (Input.GetKey(KeyCode.Space) && !isJumping)
+            {
+                body.AddForce(Vector3.up * JumpForce, ForceMode.Impulse);
+                isJumping = true;
+            }
+        }
+        else
+        {  // 벽 타는 중이면 벽 점프
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Vector3 jumpDirection = Vector3.Reflect(body.velocity, wallNormal).normalized;
+
+                // 기존 속도를 초기화하고 반대 방향으로 힘을 가하여 점프
+                body.velocity = new Vector3(0f, 0f, 0f);
+                body.AddForce(jumpDirection * JumpForce, ForceMode.Impulse);
+                print("walljump, wall normal :" + wallNormal + "jump speed: " + body.velocity);
+                StartCoroutine(sleep());
+            }
         }
     }
 
+    IEnumerator sleep()
+    {
+        yield return new WaitForSeconds(0.3f);
+    }
     void RotateWithMouse()
     {
         xRotateMove = -Input.GetAxis("Mouse Y") * RotationSpeed;
@@ -117,11 +138,6 @@ public class Player : MonoBehaviour
         xRotate = xRotate + xRotateMove;
 
         xRotate = Mathf.Clamp(xRotate, -90, 90); // 위, 아래 고정
-
-        //transform.eulerAngles = new Vector3(xRotate, yRotate, 0);
-        //float mouseX = Input.GetAxis("Mouse X") * Time.deltaTime * RotationSpeed;
-        //transform.RotateAround(Target.transform.position, Vector3.up, yRotateMove);
-
         transform.eulerAngles = new Vector3(xRotate, yRotate, 0);
     }
 
@@ -140,7 +156,7 @@ public class Player : MonoBehaviour
             {
                 audioSource.PlayOneShot(GunshotSound);
             }
-            StartRecoil();
+            //StartRecoil();
             shootDelay = 0;
         }
 
@@ -196,6 +212,36 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Floor"))
         {
             isJumping = false;
+        }
+        if (collision.gameObject.CompareTag("Wall"))
+        {
+            isJumping = false;
+            isClimbing = false; //벽을 타고 있는가?(벽의 측면에 충돌 중인가?)
+        }
+    }
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Wall"))
+        {
+            isClimbing = false;
+        }
+    }
+    void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Wall")) //벽 점프
+        {
+            // 벽의 측면에 충돌한 경우인지 검사
+            foreach (ContactPoint contact in collision.contacts)
+            {
+                if (Vector3.Dot(contact.normal, Vector3.up) < 0.1f)
+                {
+                    //print("side wall collision, wall normal" + contact.normal);
+                    isClimbing = true;
+                    // 충돌 지점의 노말 벡터가 거의 수직이면(측면 충돌), 월 점프 가능
+                    wallNormal = contact.normal;
+                    break; // 한 번만 처리하도록 종료
+                }
+            }
         }
     }
 

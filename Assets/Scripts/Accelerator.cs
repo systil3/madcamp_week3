@@ -5,7 +5,6 @@ using UnityEngine;
 public class Accelerator : MonoBehaviour
 {
     // 가속도를 가할 시간과 가속도 크기
-
     public float AccelerateDuration = 0.5f;
     public float MaintainDuration = 1f;
     public float AccelerationSpeed = 30.0f;
