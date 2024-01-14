@@ -10,6 +10,9 @@ TagManager:
   - Accel
   - Wall
   - BreakableWall
+  - Fire
+  - CinemachineTarget
+  - Bullet
   layers:
   - Default
   - TransparentFX

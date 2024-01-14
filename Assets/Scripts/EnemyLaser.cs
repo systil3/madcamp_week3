@@ -144,7 +144,7 @@ public class EnemyLaser : MonoBehaviour, IEnemy
                 if (!isFiringLaser)
                 {
                     //LaserFireSignEmissionModule.enabled = false;
-                    laserStartPoint = rb.position + new Vector3(-2, 2, 0);
+                    
                     isFiringLaser = true;
                     laserLine.enabled = true;
                     laserLine.startColor = new Color(1f, 0, 0);
@@ -152,6 +152,7 @@ public class EnemyLaser : MonoBehaviour, IEnemy
                     LaserFireSignEmissionModule.enabled = false;
                 }
 
+                laserStartPoint = rb.position + new Vector3(-2, 2, 0);
                 Vector3 rayDirection = (laserEndPoint - laserStartPoint).normalized;
                 Ray ray = new Ray(laserStartPoint, rayDirection);
 
@@ -207,12 +208,21 @@ public class EnemyLaser : MonoBehaviour, IEnemy
         LaserFireEmissionModule.enabled = true;
     }
 
+    private void OnTriggerEnter(Collider other) {
+        if(other.tag == "Bullet") {
+            TakeDamage(10);
+        }
+    }
     public void TakeDamage(float damage)
     {
         if (!isDead)
         {
             currentHealth -= damage;
-            if (currentHealth <= 0) Die();
+
+            if (currentHealth <= 0)
+            {
+                Die();
+            }
         }
     }
 

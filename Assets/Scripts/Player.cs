@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     public AudioClip GunshotSound;
 
     // 이동 관련
-    public float Speed = 20.0f;
+    public float Speed;
     public float RotationSpeed = 3.0f;
     public float JumpForce = 15.0f;
     public bool IsAccelerating = false;
@@ -43,9 +43,9 @@ public class Player : MonoBehaviour
         body = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
 
-#if UNITY_EDITOR
-        GunshotSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Custom_Yung/PistolShot1.wav");
-#endif
+        #if UNITY_EDITOR
+                GunshotSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Custom_Yung/PistolShot1.wav");
+        #endif
 
         if (pistolTransform == null)
         {
@@ -62,6 +62,7 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
+        Speed = GameManager.PlayerMaxSpeed;
         if (GameManager.IsPlayerDead) return;
         Move();
         Jump();

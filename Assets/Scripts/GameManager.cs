@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
 
     public bool IsPlayerDead => playerCurrentHealth <= 0;
     public float PlayerMaxHealth = 100f;
+
+    public float PlayerMaxSpeed = 20.0f;
+    public float PlayerSpeedSlowDownRatio = 0.5f;
+    public bool isPlayerSlowedDown = false;
     public Slider PlayerHealthSlider;
     public Text PlayerHealthText;
 
@@ -82,6 +86,22 @@ public class GameManager : MonoBehaviour
         SetPlayerHealth(100.0f);
         SetEnemyHealth(100.0f);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void SlowDownPlayerSpeed()
+    {
+        if(!isPlayerSlowedDown) {
+            PlayerMaxSpeed *= PlayerSpeedSlowDownRatio;
+            isPlayerSlowedDown = true;
+        }
+    }
+
+    public void ReturnPlayerSpeed()
+    {
+        if(isPlayerSlowedDown) {
+            PlayerMaxSpeed *= 1 / PlayerSpeedSlowDownRatio;
+            isPlayerSlowedDown = false;
+        }
     }
 
 
