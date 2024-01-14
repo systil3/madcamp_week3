@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float Damage = 10.0f;
+    public float Damage;
+    public float Radius = 0.0f;
     public float RemoveDistance = 200.0f;
 
     GameObject player;
@@ -29,10 +31,26 @@ public class Bullet : MonoBehaviour
     {
         if (!alreadyDamaged && !other.gameObject.CompareTag("Player"))
         {
-            if (other.gameObject.CompareTag("Enemy"))
+            if (Radius == 0)
             {
-                EnemyBase enemy = other.gameObject.GetComponent<EnemyBase>();
-                enemy.TakeDamage(Damage);
+                if (other.gameObject.CompareTag("Enemy"))
+                {
+                    EnemyBase enemy = other.gameObject.GetComponent<EnemyBase>();
+                    enemy.TakeDamage(Damage);
+                }
+            }
+            else
+            {
+                Collider[] colliders = Physics.OverlapSphere(transform.position, Radius);
+
+                foreach (Collider collider in colliders)
+                {
+                    if (!collider.CompareTag("Enemy")) continue;
+
+                    float distance = Vector3.Distance(collider.ClosestPoint(transform.position), transform.position);
+                    EnemyBase enemy = collider.gameObject.GetComponent<EnemyBase>();
+                    enemy.TakeDamage((float)Math.Round((decimal)(Radius - distance) / (decimal)Radius * (decimal)Damage, 1));
+                }
             }
 
             exp.Play();

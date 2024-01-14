@@ -1,29 +1,27 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class Player : MonoBehaviour
 {
     public GameManager GameManager;
-
-    // 피스톨 객체 찾기
-    public Transform pistolTransform;
-
-    // 발사 소리
-    public AudioClip GunshotSound;
-
     public LayerMask GroundLayer;
+
+    public GunType CurrentGunType = GunType.Pistol;
+    public List<Gun> Guns;
+    public AudioClip GunshotSound;
 
     // 이동 관련
     public float Speed = 20.0f;
     public float RotationSpeed = 3.0f;
-    public float JumpForce = 15.0f;
+    public float JumpForce = 3.0f;
     public bool IsFreeze = false;
 
     // 총알 관련
     public GameObject BulletObject;
     public float BulletForce = 50.0f;
-    public float MaxShootDelay = 0.05f;
 
     // 반동 관련
     public float RecoilForce = 20.0f; // 반동 힘
@@ -52,12 +50,6 @@ public class Player : MonoBehaviour
 #if UNITY_EDITOR
         GunshotSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Custom_Yung/PistolShot1.wav");
 #endif
-
-        if (pistolTransform == null)
-        {
-            // 만약 pistolTransform이 직접 Inspector에서 설정되지 않았다면 자식 오브젝트에서 찾아서 할당
-            pistolTransform = transform.Find("Pistol");
-        }
     }
 
     void Update()
@@ -65,6 +57,23 @@ public class Player : MonoBehaviour
         if (GameManager.PlayerHealth.IsDead) return;
         GameManager.UpdateEnemyHealthIndex(transform);
         isJumping = !Physics.Raycast(transform.position, Vector3.down, 2.0f, GroundLayer);
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            CurrentGunType = GunType.Pistol;
+            Debug.Log("Changed to Pistol!");
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            CurrentGunType = GunType.Rapid;
+            Debug.Log("Change to Rapid!");
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            CurrentGunType = GunType.Grenade;
+            Debug.Log("Changed to Grenade!");
+        }
+
         Shoot();
     }
 
@@ -152,22 +161,49 @@ public class Player : MonoBehaviour
 
     void Shoot()
     {
-        // 총 발사 로직을 여기에 추가 (필요에 따라 총구 이펙트, 총알 등도 추가 가능)
-        if (Input.GetButtonDown("Fire1") && shootDelay > MaxShootDelay)
+        if ((CurrentGunType != GunType.Rapid && Input.GetButtonDown("Fire1")) || (CurrentGunType == GunType.Rapid && Input.GetButton("Fire1")))
         {
-            Vector3 forward = TransformDirectionRelativeToPlayer(Vector3.forward);
-            GameObject bullet = Instantiate(BulletObject, transform.position + (forward + Vector3.up) * 0.8f, transform.rotation);
-            Rigidbody rigid = bullet.GetComponent<Rigidbody>();
-            rigid.AddForce(forward * BulletForce, ForceMode.Impulse);
+            Gun currentGun = Guns.FirstOrDefault(e => e.Type == CurrentGunType);
 
-            // 발사 소리 재생
-            if (GunshotSound != null)
+            if (shootDelay > currentGun.ShootDelay)
             {
-                audioSource.PlayOneShot(GunshotSound);
-            }
+                Bullet bullet = BulletObject.GetComponent<Bullet>();
+                bullet.Damage = currentGun.Damage;
+                bullet.Radius = CurrentGunType == GunType.Grenade ? 6.0f : 0.0f;
 
-            StartRecoil();
-            shootDelay = 0;
+                Vector3 forward = TransformDirectionRelativeToPlayer(Vector3.forward);
+                GameObject bulletInstance = Instantiate(BulletObject, transform.position + (forward + Vector3.up) * 0.8f, transform.rotation);
+                Rigidbody rigid = bulletInstance.GetComponent<Rigidbody>();
+
+                if (CurrentGunType == GunType.Pistol || CurrentGunType == GunType.Rapid)
+                {
+                    rigid.AddForce(forward * BulletForce, ForceMode.Impulse);
+
+                    // 발사 소리 재생
+                    if (GunshotSound != null)
+                    {
+                        audioSource.PlayOneShot(GunshotSound);
+                    }
+
+                    StartRecoil();
+                }
+                else if (CurrentGunType == GunType.Grenade)
+                {
+                    var psMain = bulletInstance.GetComponent<ParticleSystem>().main;
+                    psMain.duration = 3.5f;
+                    psMain.startSize = new ParticleSystem.MinMaxCurve(10.5f, 11.5f);
+
+                    rigid.AddForce(forward * BulletForce / 2, ForceMode.Impulse);
+
+                    // 발사 소리 재생
+                    if (GunshotSound != null)
+                    {
+                        audioSource.PlayOneShot(GunshotSound);
+                    }
+                }
+
+                shootDelay = 0;
+            }
         }
 
         shootDelay += Time.deltaTime;

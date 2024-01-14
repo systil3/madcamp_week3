@@ -82,6 +82,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        Debug.Log($"Damage: {damage}");
         bool isDead = GameManager.DamageToEnemy(Health, damage);
         if (isDead)
         {

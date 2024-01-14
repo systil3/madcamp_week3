@@ -106,7 +106,7 @@ NavMeshSettings:
   m_BuildSettings:
     serializedVersion: 3
     agentTypeID: 0
-    agentRadius: 0.9
+    agentRadius: 1.27
     agentHeight: 1.8
     agentSlope: 60
     agentClimb: 1.8
@@ -114,7 +114,7 @@ NavMeshSettings:
     maxJumpAcrossDistance: 1000
     minRegionArea: 2
     manualCellSize: 0
-    cellSize: 0.29999998
+    cellSize: 0.42333332
     manualTileSize: 0
     tileSize: 256
     buildHeightMesh: 0
@@ -250,20 +250,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameManager: {fileID: 604539917}
-  pistolTransform: {fileID: 0}
-  GunshotSound: {fileID: 0}
   GroundLayer:
     serializedVersion: 2
     m_Bits: 4294967295
+  CurrentGunType: 0
+  Guns:
+  - Type: 0
+    Damage: 10
+    ShootDelay: 0.15
+    Transform: {fileID: 0}
+  - Type: 1
+    Damage: 5
+    ShootDelay: 0.1
+    Transform: {fileID: 0}
+  - Type: 2
+    Damage: 20
+    ShootDelay: 1
+    Transform: {fileID: 0}
+  GunshotSound: {fileID: 0}
   Speed: 20
   RotationSpeed: 3
   JumpForce: 3
   IsFreeze: 0
   BulletObject: {fileID: 85100285107660238, guid: 84a145eeb2b8f414980ebfd0eb141cc0, type: 3}
   BulletForce: 50
-  MaxShootDelay: 0.15
   RecoilForce: 20
   RecoilDuration: 0.5
+  CameraOffset: {x: 0, y: 0, z: 0}
   IsShaking: 0
 --- !u!54 &42739578
 Rigidbody:
@@ -12512,7 +12525,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 826958899}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.9
+  m_Radius: 1.27
   m_Speed: 10
   m_Acceleration: 20
   avoidancePriority: 50
@@ -13724,12 +13737,20 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3564404217479571361, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
+      propertyPath: m_Radius
+      value: 1.27
+      objectReference: {fileID: 0}
+    - target: {fileID: 3564404217479571361, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_BaseOffset
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3810470826394628741, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_Name
       value: EnemyLaser
+      objectReference: {fileID: 0}
+    - target: {fileID: 3810470826394628741, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3810470826394628741, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_TagString
@@ -14147,6 +14168,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: d9ae9a5369a006f4da921fe62a035b2d, type: 3}
       propertyPath: m_Name
       value: Enemy2 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: d9ae9a5369a006f4da921fe62a035b2d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d9ae9a5369a006f4da921fe62a035b2d, type: 3}
       propertyPath: m_TagString
@@ -15951,12 +15976,20 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3564404217479571361, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
+      propertyPath: m_Radius
+      value: 1.27
+      objectReference: {fileID: 0}
+    - target: {fileID: 3564404217479571361, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_BaseOffset
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3810470826394628741, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_Name
       value: EnemyLaser (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3810470826394628741, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3810470826394628741, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_TagString
