@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    public ScriptableRendererFeature RendererFeature;
+
     public Text AlertText;
     public Health PlayerHealth;
     public List<EnemyBase> Enemies;
@@ -22,7 +25,13 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
+        RendererFeature.SetActive(false);
         AlertText.text = "";
+    }
+
+    void OnApplicationQuit()
+    {
+        RendererFeature.SetActive(false);
     }
 
     void Update()
@@ -101,6 +110,7 @@ public class GameManager : MonoBehaviour
             AlertText.text = $"You died!\n{i} Seconds";
             yield return new WaitForSeconds(1.0f);
         }
+
         AlertText.text = "";
         SetPlayerHealth(PlayerHealth.MaxHealth);
 
@@ -108,11 +118,20 @@ public class GameManager : MonoBehaviour
         {
             SetEnemyHealth(i, Enemies[i].Health.MaxHealth);
         }
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    IEnumerator DamageScreenCoroutine()
+    {
+        RendererFeature.SetActive(true);
+        yield return new WaitForSeconds(1.0f);
+        RendererFeature.SetActive(false);
     }
 
     public bool DamageToPlayer(float damage)
     {
+        StartCoroutine(DamageScreenCoroutine());
         PlayerHealth.Damage(damage);
         if (PlayerHealth.IsDead) PlayerDead();
         return PlayerHealth.IsDead;

@@ -29,7 +29,7 @@ public class Health
     {
         if (CurrentHealth > 0)
         {
-            CurrentHealth = Math.Max(CurrentHealth - damage, 0);
+            CurrentHealth = (float)Math.Max((decimal)CurrentHealth - (decimal)damage, 0);
         }
     }
 }
