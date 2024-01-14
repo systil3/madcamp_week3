@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Enemy3 : EnemyBase
+public class EnemySphere : EnemyBase
 {
     public float TimeBetweenShots = 8;
     public float SphereLifeTime = 6;
@@ -27,7 +27,11 @@ public class Enemy3 : EnemyBase
         base.Awake();
         elapsedTime = TimeBetweenShots;
         muzzleTransform = transform.Find("Muzzle");
-        DamageSphere.transform.Find("Surface").GetComponent<DamageSphere>().GameManager = GameManager;
+
+        DamageSphere damageSphere = DamageSphere.transform.Find("Surface").GetComponent<DamageSphere>();
+        damageSphere.GameManager = GameManager;
+        damageSphere.Damage = Damage;
+
         particleTransform = DamageSphere.transform.Find("Electricity");
         particleTransform.GetComponent<DamageSphereParticle>().GameManager = GameManager;
         particleSystemPrefab = particleTransform.GetComponent<ParticleSystem>();

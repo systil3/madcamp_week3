@@ -3,7 +3,7 @@ using UnityEngine;
 public class DamageSphere : MonoBehaviour
 {
     public GameManager GameManager;
-    public float Damage = 20.0f;
+    public float Damage;
     bool isPlayerTriggering = false;
 
     void OnTriggerEnter(Collider other)

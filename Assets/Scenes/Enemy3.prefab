@@ -250,12 +250,12 @@ MonoBehaviour:
     CurrentHealth: 100
     HealthSlider: {fileID: 0}
     HealthText: {fileID: 0}
-  Damage: 10
+  Damage: 20
   DamageDuration: 1
   DetectionRange: 100
   Player: {fileID: 0}
-  TimeBetweenShots: 8
-  SphereLifeTime: 6
+  TimeBetweenShots: 6
+  SphereLifeTime: 8
   DamageSphere: {fileID: 7646171001576665472, guid: 501f1bc2b915047369c591e8be37522b, type: 3}
   SphereSpeed: 10
   SphereScaleRate: 20

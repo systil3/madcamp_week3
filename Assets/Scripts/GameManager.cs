@@ -132,6 +132,7 @@ public class GameManager : MonoBehaviour
 
     public bool DamageToPlayer(float damage)
     {
+        if (PlayerHealth.IsDead) return true;
         StartCoroutine(DamageScreenCoroutine());
         PlayerHealth.Damage(damage);
         if (PlayerHealth.IsDead) PlayerDead();
@@ -140,6 +141,7 @@ public class GameManager : MonoBehaviour
 
     public bool DamageToEnemy(Health health, float damage)
     {
+        if (health.IsDead) return true;
         health.Damage(damage);
         if (health.IsDead) EnemyDead(health);
         return health.IsDead;
