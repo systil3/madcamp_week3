@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     public AudioClip GunshotSound;
 
     // 이동 관련
-    public float Speed = 20.0f;
+    public float Speed;
     public float RotationSpeed = 3.0f;
     public float JumpForce = 3.0f;
     public bool IsFreeze = false;
@@ -79,6 +79,7 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
+        Speed = GameManager.PlayerMaxSpeed;
         if (GameManager.PlayerHealth.IsDead) return;
         Move();
         Jump();
