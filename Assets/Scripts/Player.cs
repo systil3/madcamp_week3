@@ -14,10 +14,14 @@ public class Player : MonoBehaviour
     public AudioClip GunshotSound;
 
     // 이동 관련
-    public float Speed;
+    public float Speed = 20.0f;
     public float RotationSpeed = 3.0f;
     public float JumpForce = 3.0f;
     public bool IsFreeze = false;
+    float initialSpeed;
+
+    public float SpeedSlowDownRatio = 0.5f;
+    public bool IsSlowedDown = false;
 
     // 총알 관련
     public GameObject BulletObject;
@@ -46,6 +50,7 @@ public class Player : MonoBehaviour
         body = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
         CameraOffset = Camera.main.transform.localPosition;
+        initialSpeed = Speed;
 
 #if UNITY_EDITOR
         GunshotSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Custom_Yung/PistolShot1.wav");
@@ -79,7 +84,6 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        Speed = GameManager.PlayerMaxSpeed;
         if (GameManager.PlayerHealth.IsDead) return;
         Move();
         Jump();
@@ -111,11 +115,27 @@ public class Player : MonoBehaviour
     {
         // 플레이어의 현재 회전을 가져옴
         Quaternion playerRotation = transform.rotation;
-
         // 플레이어의 전방(Forward) 방향을 기준으로 좌표 변환
         Vector3 transformedDirection = playerRotation * direction;
-
         return transformedDirection;
+    }
+
+    public void SlowDownSpeed()
+    {
+        if (!IsSlowedDown)
+        {
+            Speed *= SpeedSlowDownRatio;
+            IsSlowedDown = true;
+        }
+    }
+
+    public void ReturnPlayerSpeed()
+    {
+        if (IsSlowedDown)
+        {
+            Speed = initialSpeed;
+            IsSlowedDown = false;
+        }
     }
 
     void Jump()
@@ -190,9 +210,9 @@ public class Player : MonoBehaviour
                 }
                 else if (CurrentGunType == GunType.Grenade)
                 {
-                    var psMain = bulletInstance.GetComponent<ParticleSystem>().main;
-                    psMain.duration = 3.5f;
-                    psMain.startSize = new ParticleSystem.MinMaxCurve(10.5f, 11.5f);
+                    var mainModule = bulletInstance.GetComponent<ParticleSystem>().main;
+                    mainModule.duration = 3.5f;
+                    mainModule.startSize = new ParticleSystem.MinMaxCurve(10.5f, 11.5f);
 
                     rigid.AddForce(forward * BulletForce / 2, ForceMode.Impulse);
 

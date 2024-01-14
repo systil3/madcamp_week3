@@ -2,16 +2,16 @@ using UnityEngine;
 
 public class SurfaceParticles : MonoBehaviour
 {
-    public ParticleSystem particleSystemPrefab;
-    public int numberOfParticles = 100;
+    public ParticleSystem ParticleSystemPrefab;
+    public int NumberOfParticles = 100;
 
-    private ParticleSystem particleSystemInstance;
-    private Transform particleTransform;
+    ParticleSystem particleSystemInstance;
+    Transform particleTransform;
 
     void Start()
     {
         // 파티클 시스템 프리팹을 인스턴스화
-        particleSystemInstance = Instantiate(particleSystemPrefab);
+        particleSystemInstance = Instantiate(ParticleSystemPrefab);
         particleTransform = particleSystemInstance.transform;
 
         // 구 모양의 오브젝트 표면에 파티클 배치
@@ -25,7 +25,7 @@ public class SurfaceParticles : MonoBehaviour
         {
             Mesh mesh = meshFilter.sharedMesh;
 
-            for (int i = 0; i < numberOfParticles; i++)
+            for (int i = 0; i < NumberOfParticles; i++)
             {
                 // 랜덤한 표면 점 샘플링
                 Vector3 randomPointOnSurface = Random.onUnitSphere * 0.5f; // 0.5f는 반지름 조절

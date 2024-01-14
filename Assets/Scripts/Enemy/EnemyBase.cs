@@ -32,7 +32,7 @@ public abstract class EnemyBase : MonoBehaviour
         body = GetComponent<Rigidbody>();
     }
 
-    void Update()
+    public virtual void Update()
     {
         float distanceToPlayer = Vector3.Distance(transform.position, Player.position);
 

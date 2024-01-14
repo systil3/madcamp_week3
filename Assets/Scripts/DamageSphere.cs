@@ -1,34 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class DamageSphere: MonoBehaviour
-{   
+public class DamageSphere : MonoBehaviour
+{
     public GameManager GameManager;
-    private float Damage = 20f;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public float Damage = 20.0f;
+    bool isPlayerTriggering = false;
 
-    // Update is called once per frame
-    void Update()
+    void OnTriggerEnter(Collider other)
     {
-        
-    }
-    private void OnTriggerEnter(Collider other) {
         if (other.CompareTag("Player"))
         {
+            isPlayerTriggering = true;
             GameManager.DamageToPlayer(Damage);
-            GameManager.SlowDownPlayerSpeed();
+            other.GetComponent<Player>().SlowDownSpeed();
         }
     }
 
-    private void OnTriggerExit(Collider other) {
+    void OnTriggerExit(Collider other)
+    {
         if (other.CompareTag("Player"))
         {
-            GameManager.ReturnPlayerSpeed();
+            other.GetComponent<Player>().ReturnPlayerSpeed();
+            isPlayerTriggering = false;
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (isPlayerTriggering)
+        {
+            GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().ReturnPlayerSpeed();
+            isPlayerTriggering = false;
         }
     }
 }

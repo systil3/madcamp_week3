@@ -246,22 +246,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GameManager: {fileID: 0}
   Health:
-    MaxHealth: 0
-    CurrentHealth: 0
+    MaxHealth: 100
+    CurrentHealth: 100
     HealthSlider: {fileID: 0}
     HealthText: {fileID: 0}
-  Damage: 20
+  Damage: 10
   DamageDuration: 1
   DetectionRange: 100
   Player: {fileID: 0}
-  ParticleForce: 30
-  timeBetweenShots: 8
-  sphereLifeTime: 6
-  damageSphere: {fileID: 0}
-  sphereSpeed: 10
-  sphereScaleRate: 20
-  particleSystemPrefab: {fileID: 0}
-  numberOfParticles: 100
+  TimeBetweenShots: 8
+  SphereLifeTime: 6
+  DamageSphere: {fileID: 7646171001576665472, guid: 501f1bc2b915047369c591e8be37522b, type: 3}
+  SphereSpeed: 10
+  SphereScaleRate: 20
+  NumberOfParticles: 100
 --- !u!195 &8724455473005232871
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -5204,6 +5202,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameManager: {fileID: 0}
+  Damage: 5
 --- !u!1 &4403616645584530366
 GameObject:
   m_ObjectHideFlags: 0
@@ -10394,6 +10393,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameManager: {fileID: 0}
+  Damage: 20
 --- !u!1 &7105602441690385587
 GameObject:
   m_ObjectHideFlags: 0

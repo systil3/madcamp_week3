@@ -15,10 +15,6 @@ public class GameManager : MonoBehaviour
     public Health PlayerHealth;
     public List<EnemyBase> Enemies;
 
-    public float PlayerMaxSpeed = 20.0f;
-    public float PlayerSpeedSlowDownRatio = 0.5f;
-    public bool isPlayerSlowedDown = false;
-
     public Slider EnemyHealthSlider;
     public Text EnemyHealthText;
 
@@ -125,24 +121,6 @@ public class GameManager : MonoBehaviour
         }
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void SlowDownPlayerSpeed()
-    {
-        if (!isPlayerSlowedDown)
-        {
-            PlayerMaxSpeed *= PlayerSpeedSlowDownRatio;
-            isPlayerSlowedDown = true;
-        }
-    }
-
-    public void ReturnPlayerSpeed()
-    {
-        if (isPlayerSlowedDown)
-        {
-            PlayerMaxSpeed *= 1 / PlayerSpeedSlowDownRatio;
-            isPlayerSlowedDown = false;
-        }
     }
 
     IEnumerator DamageScreenCoroutine()
