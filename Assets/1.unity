@@ -258,12 +258,13 @@ MonoBehaviour:
   Speed: 20
   RotationSpeed: 3
   JumpForce: 3
-  IsAccelerating: 0
+  IsFreeze: 0
   BulletObject: {fileID: 85100285107660238, guid: 84a145eeb2b8f414980ebfd0eb141cc0, type: 3}
   BulletForce: 50
   MaxShootDelay: 0.15
-  RecoilForce: 15
+  RecoilForce: 20
   RecoilDuration: 0.5
+  IsShaking: 0
 --- !u!54 &42739578
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1053,7 +1054,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AccelerateDuration: 0.5
   MaintainDuration: 1
-  AccelerationSpeed: 30
+  AccelerationSpeed: 35
 --- !u!1 &262459040 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 7ef194b4b381fd846a5d1edbc4ab5e2f, type: 3}
@@ -2014,6 +2015,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4a71e37bd2e4481590b827e3f77d8d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  RendererFeature: {fileID: -7285022751255510661, guid: 6eb9d58ab7d9a48c182a9d0369f77b68, type: 2}
   AlertText: {fileID: 1481834391}
   PlayerHealth:
     MaxHealth: 100
@@ -2168,7 +2170,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AccelerateDuration: 0.5
   MaintainDuration: 1
-  AccelerationSpeed: 30
+  AccelerationSpeed: 35
 --- !u!1 &661687482 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: a0b47092df620c0478d51cb96bab4560, type: 3}
@@ -2323,7 +2325,6 @@ Transform:
   m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 1446117217}
   - {fileID: 1582958666}
   - {fileID: 1245206654}
   m_Father: {fileID: 0}
@@ -7202,8 +7203,10 @@ MonoBehaviour:
     HealthSlider: {fileID: 0}
     HealthText: {fileID: 0}
   Damage: 0
+  DamageDuration: 0
   DetectionRange: 0
   Player: {fileID: 0}
+  ParticleForce: 30
 --- !u!1001 &723070238
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7675,7 +7678,7 @@ ParticleSystemRenderer:
   m_NormalDirection: 1
   m_ShadowBias: 0
   m_RenderAlignment: 0
-  m_Pivot: {x: 0, y: 2, z: 0}
+  m_Pivot: {x: 0, y: 0, z: 0}
   m_Flip: {x: 1, y: 0, z: 1}
   m_EnableGPUInstancing: 1
   m_ApplyActiveColorSpace: 1
@@ -11526,7 +11529,7 @@ ParticleSystem:
     outside: 0
     enter: 2
     exit: 0
-    colliderQueryMode: 0
+    colliderQueryMode: 1
     radiusScale: 1
     primitives:
     - {fileID: 42739576}
@@ -12496,8 +12499,10 @@ MonoBehaviour:
     HealthSlider: {fileID: 0}
     HealthText: {fileID: 0}
   Damage: 10
+  DamageDuration: 1
   DetectionRange: 100
-  Player: {fileID: 42739576}
+  Player: {fileID: 42739578}
+  ParticleForce: 30
 --- !u!195 &826958907
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -13379,7 +13384,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AccelerateDuration: 0.5
   MaintainDuration: 1
-  AccelerationSpeed: 30
+  AccelerationSpeed: 35
 --- !u!1 &1051660953 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: b45e3ab0ad9efb4458cf725d664ec58d, type: 3}
@@ -13802,8 +13807,9 @@ MonoBehaviour:
     HealthSlider: {fileID: 0}
     HealthText: {fileID: 0}
   Damage: 0.2
+  DamageDuration: 1
   DetectionRange: 50
-  Player: {fileID: 42739576}
+  Player: {fileID: 42739578}
   LaserPeriod: 2
   LaserAimingDelay: 1
   LaserFiringTime: 0.5
@@ -14487,162 +14493,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1634119426}
   m_SourcePrefab: {fileID: 100100000, guid: bfff06aaff363a847ad37bf592364e6b, type: 3}
---- !u!1 &1446117216
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1446117217}
-  - component: {fileID: 1446117221}
-  - component: {fileID: 1446117220}
-  - component: {fileID: 1446117219}
-  - component: {fileID: 1446117218}
-  m_Layer: 0
-  m_Name: Main Camera
-  m_TagString: MainCamera
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 40
-  m_IsActive: 1
---- !u!4 &1446117217
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1446117216}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.16000001, y: 0.435, z: -0.136}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 671458217}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1446117218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1446117216}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 597c62aabf6ca524ab507718f592540e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Target: {fileID: 671458211}
-  offsetX: 0.8
-  offsetY: 3.2
-  offsetZ: 0
-  CameraSpeed: 20
-  RotationSpeed: 5
---- !u!114 &1446117219
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1446117216}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_RenderShadows: 1
-  m_RequiresDepthTextureOption: 2
-  m_RequiresOpaqueTextureOption: 2
-  m_CameraType: 0
-  m_Cameras: []
-  m_RendererIndex: -1
-  m_VolumeLayerMask:
-    serializedVersion: 2
-    m_Bits: 1
-  m_VolumeTrigger: {fileID: 0}
-  m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
-  m_Antialiasing: 0
-  m_AntialiasingQuality: 2
-  m_StopNaN: 0
-  m_Dithering: 0
-  m_ClearDepth: 1
-  m_AllowXRRendering: 1
-  m_AllowHDROutput: 1
-  m_UseScreenCoordOverride: 0
-  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
-  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
-  m_RequiresDepthTexture: 0
-  m_RequiresColorTexture: 0
-  m_Version: 2
-  m_TaaSettings:
-    quality: 3
-    frameInfluence: 0.1
-    jitterScale: 1
-    mipBias: 0
-    varianceClampScale: 0.9
-    contrastAdaptiveSharpening: 0
---- !u!81 &1446117220
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1446117216}
-  m_Enabled: 0
---- !u!20 &1446117221
-Camera:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1446117216}
-  m_Enabled: 1
-  serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
-  m_projectionMatrixMode: 1
-  m_GateFitMode: 2
-  m_FOVAxisMode: 0
-  m_Iso: 200
-  m_ShutterSpeed: 0.005
-  m_Aperture: 16
-  m_FocusDistance: 10
-  m_FocalLength: 50
-  m_BladeCount: 5
-  m_Curvature: {x: 2, y: 11}
-  m_BarrelClipping: 0.25
-  m_Anamorphism: 0
-  m_SensorSize: {x: 36, y: 24}
-  m_LensShift: {x: 0, y: 0}
-  m_NormalizedViewPortRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
-  field of view: 60
-  orthographic: 0
-  orthographic size: 5
-  m_Depth: -1
-  m_CullingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_RenderingPath: -1
-  m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 0
-  m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 1
-  m_AllowDynamicResolution: 0
-  m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
-  m_StereoConvergence: 10
-  m_StereoSeparation: 0.022
 --- !u!1001 &1473342447
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15216,7 +15066,6 @@ GameObject:
   - component: {fileID: 1654947153}
   - component: {fileID: 1654947152}
   - component: {fileID: 1654947151}
-  - component: {fileID: 1654947150}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -15224,24 +15073,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 40
   m_IsActive: 1
---- !u!114 &1654947150
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1654947149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 597c62aabf6ca524ab507718f592540e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Target: {fileID: 42739572}
-  offsetX: 0.8
-  offsetY: 3.2
-  offsetZ: 0
-  CameraSpeed: 20
-  RotationSpeed: 5
 --- !u!114 &1654947151
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15578,7 +15409,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: Enemy Health Text
 --- !u!222 &1756389187
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -15902,7 +15733,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AccelerateDuration: 0.5
   MaintainDuration: 1
-  AccelerationSpeed: 30
+  AccelerationSpeed: 35
 --- !u!1001 &1945706291
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16203,8 +16034,9 @@ MonoBehaviour:
     HealthSlider: {fileID: 0}
     HealthText: {fileID: 0}
   Damage: 0.2
+  DamageDuration: 1
   DetectionRange: 50
-  Player: {fileID: 42739576}
+  Player: {fileID: 42739578}
   LaserPeriod: 2
   LaserAimingDelay: 1
   LaserFiringTime: 0.5

@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 {
     public GameManager GameManager;
 
-    //피스톨 객체 찾기
+    // 피스톨 객체 찾기
     public Transform pistolTransform;
 
     // 발사 소리
@@ -18,32 +18,36 @@ public class Player : MonoBehaviour
     public float Speed = 20.0f;
     public float RotationSpeed = 3.0f;
     public float JumpForce = 15.0f;
-    public bool IsAccelerating = false;
+    public bool IsFreeze = false;
 
     // 총알 관련
     public GameObject BulletObject;
     public float BulletForce = 50.0f;
     public float MaxShootDelay = 0.05f;
 
-    //반동 제어
-    public float RecoilForce = 15.0f; // 반동 힘
+    // 반동 관련
+    public float RecoilForce = 20.0f; // 반동 힘
     public float RecoilDuration = 0.5f;
     Vector3 originalPosition;
     Vector3 wallNormal;
-    bool isRecoiling = false;
 
-    Rigidbody body;
-    AudioSource audioSource; // AudioSource 컴포넌트
+    // 카메라 관련
+    public Vector3 CameraOffset;
+    public bool IsShaking = false;
+    float xRotate, yRotate, xRotateMove, yRotateMove;
 
     bool isJumping = false;
     bool isClimbing = false;
     float shootDelay = 0;
-    float xRotate, yRotate, xRotateMove, yRotateMove;
+
+    Rigidbody body;
+    AudioSource audioSource; // AudioSource 컴포넌트
 
     void Awake()
     {
         body = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
+        CameraOffset = Camera.main.transform.localPosition;
 
 #if UNITY_EDITOR
         GunshotSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Custom_Yung/PistolShot1.wav");
@@ -75,11 +79,12 @@ public class Player : MonoBehaviour
     {
         if (GameManager.PlayerHealth.IsDead) return;
         RotateWithMouse();
+        if (!IsShaking) Camera.main.transform.localPosition = CameraOffset;
     }
 
     void Move()
     {
-        if (IsAccelerating) return;
+        if (IsFreeze) return;
 
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
@@ -170,18 +175,14 @@ public class Player : MonoBehaviour
 
     void StartRecoil()
     {
-        if (isRecoiling) return;
-
-        isRecoiling = true; // 반동이 시작되었음을 표시
-        // 반동 힘을 impulse로 적용
-        body.AddForce(-transform.forward.x * RecoilForce, Mathf.Min(-transform.forward.y * RecoilForce, 1.0f), -transform.forward.z * RecoilForce, ForceMode.Impulse);
-
-        StartCoroutine(RecoilCoroutine()); //velocity로 적용
-        //Recoil(); //Impulse로 적용
+        if (!IsShaking) StartCoroutine(RecoilCoroutine());
     }
 
     IEnumerator RecoilCoroutine()
     {
+        IsShaking = true;
+        body.AddForce(-transform.forward.x * RecoilForce, Mathf.Min(-transform.forward.y * RecoilForce, 1.0f), -transform.forward.z * RecoilForce, ForceMode.Impulse);
+
         //float elapsedTime = 0f;
 
         // 플레이어에 대해 반동을 가함
@@ -202,15 +203,20 @@ public class Player : MonoBehaviour
             yield return null;
         }*/
 
-        yield return new WaitForSeconds(RecoilDuration);
-        // 반동 종료
-        isRecoiling = false;
-    }
+        float halfDuration = RecoilDuration / 2;
+        float elapsed = 0f;
+        float tick = Random.Range(0f, 1000f);
 
-    void Recoil()
-    {
-        // 반동 중일 때 필요한 작업을 수행
-        // (예: 화면 흔들림 효과 등)
+        while (elapsed < RecoilDuration)
+        {
+            Vector3 noise = new Vector3(Mathf.PerlinNoise(100, tick), Mathf.PerlinNoise(200, tick), Mathf.PerlinNoise(300, tick)) - 0.5f * Vector3.one;
+            Camera.main.transform.localPosition = CameraOffset + noise * 5.0f * Mathf.PingPong(elapsed, halfDuration);
+            tick += Time.deltaTime * 2.0f;
+            elapsed += Time.deltaTime / halfDuration;
+            yield return null;
+        }
+
+        IsShaking = false;
     }
 
     void OnCollisionEnter(Collision collision)
@@ -245,14 +251,6 @@ public class Player : MonoBehaviour
                     break; // 한 번만 처리하도록 종료
                 }
             }
-        }
-    }
-
-    void OnTriggerEnter(Collider collision)
-    {
-        if (collision.gameObject.CompareTag("Accel"))
-        {
-            IsAccelerating = true;
         }
     }
 }

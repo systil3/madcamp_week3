@@ -15,8 +15,9 @@ public abstract class EnemyBase : MonoBehaviour
 
     public Health Health;
     public float Damage;
+    public float DamageDuration;
     public float DetectionRange;
-    public Transform Player;
+    public Rigidbody Player;
 
     protected EnemyState currentState;
     protected NavMeshAgent navMeshAgent;

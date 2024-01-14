@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using System.Collections;
 
 public abstract class EnemyLaserBase : EnemyBase
 {
@@ -107,6 +108,8 @@ public abstract class EnemyLaserBase : EnemyBase
 
             if (hit.collider != null && hit.collider.gameObject.CompareTag("Player"))
             {
+                Player player = Player.GetComponent<Player>();
+                if (!player.IsShaking) StartCoroutine(Shake(player));
                 GameManager.DamageToPlayer(Damage);
             }
         }
@@ -124,5 +127,25 @@ public abstract class EnemyLaserBase : EnemyBase
         }
 
         LaserTime += Time.deltaTime;
+    }
+
+    IEnumerator Shake(Player player)
+    {
+        player.IsShaking = true;
+
+        float halfDuration = DamageDuration / 2;
+        float elapsed = 0f;
+        float tick = Random.Range(0f, 1000f);
+
+        while (elapsed < DamageDuration)
+        {
+            Vector3 noise = new Vector3(Mathf.PerlinNoise(100, tick), Mathf.PerlinNoise(200, tick), Mathf.PerlinNoise(300, tick)) - 0.5f * Vector3.one;
+            Camera.main.transform.localPosition = player.CameraOffset + noise * 2.0f * Mathf.PingPong(elapsed, halfDuration);
+            tick += Time.deltaTime * 10.0f;
+            elapsed += Time.deltaTime / halfDuration;
+            yield return null;
+        }
+
+        player.IsShaking = false;
     }
 }
