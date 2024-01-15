@@ -28,6 +28,7 @@ public class EnemyLaser : EnemyLaserBase
 
     public override void Die()
     {
+        base.Die();
         Destroy(gameObject, 3f);
     }
 }

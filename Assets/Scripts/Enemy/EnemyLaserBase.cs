@@ -133,6 +133,11 @@ public abstract class EnemyLaserBase : EnemyBase
         LaserFireEmissionModule.enabled = false;
     }
 
+    public override void Die()
+    {
+        OnDormant();
+    }
+
     IEnumerator Shake(Player player)
     {
         float halfDuration = DamageDuration / 2;
