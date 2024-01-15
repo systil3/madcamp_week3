@@ -7,7 +7,7 @@ public abstract class EnemyLaserBase : EnemyBase
     public float LaserPeriod = 2f; // 레이저 발사 주기
     public float LaserAimingDelay = 1f; // 레이저 조준 시간
     public float LaserFiringTime = 0.5f; // 레이저 발사 시간
-    public float LaserTime = 1.5f + 10.0f; // 시간 측정
+    public float LaserTime = 2.5f + 10.0f; // 시간 측정
 
     protected bool isAimingLaser = false; // 레이저를 조준하고 있는지
     protected bool isFiringLaser = false; // 레이저를 발사하고 있는지

@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: c5fc3a237e825f146a6f23549a40056b
+=======
+guid: 35029414de7eb9541b9818fa786a074a
+>>>>>>> branch_yung
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []

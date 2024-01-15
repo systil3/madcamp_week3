@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 
 public class Player : MonoBehaviour
 {
@@ -27,8 +28,11 @@ public class Player : MonoBehaviour
     public bool IsSlowedDown = false;
 
     // 총알 관련
-    public GameObject BulletObject;
-    public float BulletForce = 30.0f;
+
+    public GameObject Bullet;
+    public GameObject Grenade;
+    public GameObject Pellet;
+    GameObject bulletObject;
 
     // 반동 관련
     public float RecoilForce = 20.0f; // 반동 힘
@@ -42,8 +46,9 @@ public class Player : MonoBehaviour
     float cameraTick;
 
     Rigidbody body;
-    AudioSource audioSource;
     Transform armTransform;
+    public Vector3 ArmOffset;
+    AudioSource audioSource;
 
     void Awake()
     {
@@ -51,6 +56,7 @@ public class Player : MonoBehaviour
         body = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
         armTransform = transform.Find("Arm");
+        ArmOffset = armTransform.localPosition;
         initialSpeed = Speed;
 
 #if UNITY_EDITOR
@@ -79,6 +85,11 @@ public class Player : MonoBehaviour
     {
         if (GameManager.PlayerHealth.IsDead) return;
         RotateWithMouse();
+        /*
+        if (!IsShaking) {
+            arm.localPosition = ArmOffset;
+        }
+        */
     }
 
     void Move()
@@ -173,23 +184,29 @@ public class Player : MonoBehaviour
 
     void Shoot()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1) && CurrentGunType != GunType.Pistol)
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             CurrentGunType = GunType.Pistol;
             StartCoroutine(ChangeGunCoroutine());
             Debug.Log("Changed to Pistol!");
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2) && CurrentGunType != GunType.Rapid)
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             CurrentGunType = GunType.Rapid;
             StartCoroutine(ChangeGunCoroutine());
             Debug.Log("Change to Rapid!");
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha3) && CurrentGunType != GunType.Grenade)
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             CurrentGunType = GunType.Grenade;
             StartCoroutine(ChangeGunCoroutine());
             Debug.Log("Changed to Grenade!");
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            CurrentGunType = GunType.Shotgun;
+            StartCoroutine(ChangeGunCoroutine());
+            Debug.Log("Changed to ShotGun!");
         }
 
         if ((CurrentGunType != GunType.Rapid && Input.GetButtonDown("Fire1")) || (CurrentGunType == GunType.Rapid && Input.GetButton("Fire1")))
@@ -198,17 +215,35 @@ public class Player : MonoBehaviour
 
             if (shootDelay > currentGun.ShootDelay)
             {
-                Bullet bullet = BulletObject.GetComponent<Bullet>();
-                bullet.Damage = currentGun.Damage;
-                bullet.Radius = CurrentGunType == GunType.Grenade ? 6.0f : 0.0f;
+                switch (CurrentGunType)
+                {
+                    case GunType.Pistol:
+                        bulletObject = Bullet;
+                        break;
+                    case GunType.Rapid:
+                        bulletObject = Bullet;
+                        break;
+                    case GunType.Grenade:
+                        bulletObject = Grenade;
+                        break;
+                    case GunType.Shotgun:
+                        bulletObject = Pellet;
+                        break;
+                    default:
+                        throw new System.Exception("invalid gun type");
+                }
+
+                bulletObject.GetComponent<Ammo>().Damage = currentGun.Damage;
+                RecoilForce = currentGun.RecoilForce;
+                RecoilDuration = currentGun.RecoilDuration;
 
                 Vector3 forward = TransformDirectionRelativeToPlayer(Vector3.forward);
-                GameObject bulletInstance = Instantiate(BulletObject, transform.position + (forward + Vector3.up) * 0.8f, transform.rotation);
-                Rigidbody rigid = bulletInstance.GetComponent<Rigidbody>();
+                GameObject bulletInstance = Instantiate(bulletObject, transform.position + (forward + Vector3.up) * 0.8f, transform.rotation);
+                Rigidbody bulletRigidBody = bulletInstance.GetComponent<Rigidbody>();
 
                 if (CurrentGunType == GunType.Pistol || CurrentGunType == GunType.Rapid)
                 {
-                    rigid.AddForce(forward * BulletForce, ForceMode.Impulse);
+                    bulletRigidBody.AddForce(forward * currentGun.Force, ForceMode.Impulse);
 
                     // 발사 소리 재생
                     if (GunshotSound != null)
@@ -220,17 +255,40 @@ public class Player : MonoBehaviour
                 }
                 else if (CurrentGunType == GunType.Grenade)
                 {
-                    var mainModule = bulletInstance.GetComponent<ParticleSystem>().main;
+                    /*var mainModule = bulletInstance.GetComponent<ParticleSystem>().main;
                     mainModule.duration = 3.5f;
-                    mainModule.startSize = new ParticleSystem.MinMaxCurve(10.5f, 11.5f);
+                    mainModule.startSize = new ParticleSystem.MinMaxCurve(10.5f, 11.5f);*/
 
-                    rigid.AddForce(forward * BulletForce * 1.5f, ForceMode.Impulse);
+                    bulletRigidBody.AddForce(forward * currentGun.Force, ForceMode.Impulse);
+                    //bulletRigidBody.AddForce(forward * BulletForce / 3, ForceMode.Impulse);
 
                     // 발사 소리 재생
                     if (GunshotSound != null)
                     {
                         audioSource.PlayOneShot(GunshotSound);
                     }
+                }
+                else if (CurrentGunType == GunType.Shotgun)
+                {
+                    int numberOfPellets = 10;
+                    for (int i = 0; i < numberOfPellets; i++)
+                    {
+                        // 단위원 위 무작위 2D 벡터를 얻음
+                        Vector2 randomDirection2D = Random.insideUnitCircle;
+
+                        // 플레이어의 방향을 기준으로 1m 앞에 위치한 1m 반경의 원 위로 이동
+                        Vector3 spawnPosition = transform.position + (TransformDirectionRelativeToPlayer(Vector3.forward) + Vector3.up) * 0.8f;
+
+                        // 2D 벡터를 3D로 확장하여 힘을 가함
+                        Vector3 randomDirection3D = new Vector3(randomDirection2D.x, randomDirection2D.y, 3f).normalized;
+                        bulletRigidBody.AddForce(randomDirection3D * currentGun.Force, ForceMode.Impulse);
+
+                        // 데미지를 펠릿 수로 나눔
+                        Pellet pellet = bulletInstance.GetComponent<Pellet>();
+                        pellet.Damage /= numberOfPellets;
+                    }
+
+                    StartCoroutine(RecoilCoroutine());
                 }
 
                 shootDelay = 0;
@@ -254,35 +312,21 @@ public class Player : MonoBehaviour
     {
         body.AddForce(-transform.forward.x * RecoilForce, Mathf.Min(-transform.forward.y * RecoilForce, 1.0f), -transform.forward.z * RecoilForce, ForceMode.Impulse);
 
-        //float elapsedTime = 0f;
-
-        // 플레이어에 대해 반동을 가함
-        //body.velocity -= transform.forward * recoilForce;
-
-        /*while (elapsedTime < recoilDuration)
-        {
-            // 이징 적용
-            float t = elapsedTime / recoilDuration;
-            float easedT = Mathf.SmoothStep(0f, 1f, t);
-
-            // 반동 힘 계산
-            Vector3 recoilOffset = -transform.forward * recoilForce * Time.deltaTime * easedT;
-
-            // 플레이어에게 반동 힘 적용
-            body.velocity += recoilOffset;
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }*/
-
         float halfDuration = RecoilDuration / 2;
         float elapsed = 0f;
-        float tick = Random.Range(0f, 1000f);
+        float tick = Random.Range(0f, 500f);
 
         while (elapsed < RecoilDuration)
         {
             Vector3 noise = new Vector3(Mathf.PerlinNoise(100, tick), Mathf.PerlinNoise(200, tick), Mathf.PerlinNoise(300, tick)) - 0.5f * Vector3.one;
             Camera.main.transform.localPosition = CameraOffset + noise * 4.0f * Mathf.PingPong(elapsed, halfDuration);
             tick += Time.deltaTime * 0.5f;
+            /*
+            Vector3 noise = new Vector3(0, 0, -1) * Mathf.PerlinNoise(10, tick);
+                        
+            arm.localPosition = ArmOffset + noise * 5.0f * Mathf.PingPong(elapsed, halfDuration);
+            tick += Time.deltaTime * 2.0f;
+            */
             elapsed += Time.deltaTime / halfDuration;
             yield return null;
         }

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// 직선 방향 레이저만 사용
 public class EnemyLaser : EnemyLaserBase
 {
     public override RaycastHit MakeLaser()

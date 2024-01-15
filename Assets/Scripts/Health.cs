@@ -19,17 +19,19 @@ public class Health
         HealthSlider.transform.Find("Fill Area").gameObject.SetActive(!IsDead);
     }
 
-    public void SetHealth(float maxHealth)
+    public void SetMaxHealth(float maxHealth)
     {
         MaxHealth = maxHealth;
         CurrentHealth = MaxHealth;
     }
 
+    public void Heal(float heal)
+    {
+        CurrentHealth = (float)Math.Min((decimal)CurrentHealth + (decimal)heal, (decimal)MaxHealth);
+    }
+
     public void Damage(float damage)
     {
-        if (CurrentHealth > 0)
-        {
-            CurrentHealth = (float)Math.Max((decimal)CurrentHealth - (decimal)damage, 0);
-        }
+        CurrentHealth = (float)Math.Max((decimal)CurrentHealth - (decimal)damage, 0);
     }
 }
