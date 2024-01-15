@@ -4,10 +4,12 @@ using System.Collections;
 
 public abstract class EnemyLaserBase : EnemyBase
 {
+
+    string laserType = "unknown"; // 발사 유형
     public float LaserPeriod = 2f; // 레이저 발사 주기
     public float LaserAimingDelay = 1f; // 레이저 조준 시간
     public float LaserFiringTime = 0.5f; // 레이저 발사 시간
-    public float LaserTime = 1.5f + 10.0f; // 시간 측정
+    public float LaserTime = 2.5f + 10.0f; // 시간 측정
 
     protected bool isAimingLaser = false; // 레이저를 조준하고 있는지
     protected bool isFiringLaser = false; // 레이저를 발사하고 있는지
@@ -72,7 +74,7 @@ public abstract class EnemyLaserBase : EnemyBase
 #endif
     }
 
-    public abstract RaycastHit MakeLaser();
+    public abstract RaycastHit MakeLaser(string laserType = "unknown");
 
     public override void OnCombat()
     {
@@ -83,6 +85,11 @@ public abstract class EnemyLaserBase : EnemyBase
             isFiringLaser = false;
             LaserLine.enabled = false;
             LaserFireEmissionModule.enabled = false;
+
+            //다음에 쏠 타입 정하기 : 2/3의 확률로 직선, 1/3의 확률로 원형
+            float laserRandomValue = Random.Range(0f, 1f);
+            laserType = laserRandomValue < 0.33f ? "circle" : "line";
+            LaserFiringTime = laserType == "circle" ? 2f : 0.5f;
         }
 
         if (LaserTime > LaserPeriod)
@@ -101,7 +108,7 @@ public abstract class EnemyLaserBase : EnemyBase
                 LaserFireSignEmissionModule.enabled = false;
             }
 
-            RaycastHit hit = MakeLaser();
+            RaycastHit hit = MakeLaser(laserType);
 
             LaserFireParticleTransform.position = hitPosition;
             LaserFireEmissionModule.enabled = true;

@@ -1,8 +1,9 @@
 using UnityEngine;
 
+// 직선 방향 레이저만 사용
 public class EnemyLaser : EnemyLaserBase
 {
-    public override RaycastHit MakeLaser()
+    public override RaycastHit MakeLaser(string laserType = "unknown")
     {
         Vector3 rayDirection = (laserEndPoint - laserStartPoint).normalized;
         Ray ray = new Ray(laserStartPoint, rayDirection);

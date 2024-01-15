@@ -22,6 +22,17 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        // Enemy 태그를 가진 모든 객체들을 찾아서 리스트에 추가
+        GameObject[] enemyObjects = GameObject.FindGameObjectsWithTag("Enemy");
+
+        foreach (GameObject enemyObject in enemyObjects)
+        {
+            EnemyBase enemy = enemyObject.GetComponent<EnemyBase>();
+            if (enemy != null){
+                Enemies.Add(enemy);
+            }
+        }
+
         //마우스 포인터 잠금 및 숨김
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -83,12 +94,12 @@ public class GameManager : MonoBehaviour
 
     public void SetPlayerHealth(float maxHealth)
     {
-        PlayerHealth.SetHealth(maxHealth);
+        PlayerHealth.SetMaxHealth(maxHealth);
     }
 
     public void SetEnemyHealth(int index, float maxHealth)
     {
-        Enemies[index].Health.SetHealth(maxHealth);
+        Enemies[index].Health.SetMaxHealth(maxHealth);
     }
 
     void PlayerDead()
@@ -137,6 +148,10 @@ public class GameManager : MonoBehaviour
         PlayerHealth.Damage(damage);
         if (PlayerHealth.IsDead) PlayerDead();
         return PlayerHealth.IsDead;
+    }
+
+    public void HealToPlayer(float heal) {
+        PlayerHealth.Heal(heal);
     }
 
     public bool DamageToEnemy(Health health, float damage)

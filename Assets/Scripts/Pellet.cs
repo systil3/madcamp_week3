@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
 
-public class Bullet : Ammo
+public class Pellet : Ammo
 {
     void Awake() {
-        Damage = 10.0f;
+        Damage = 5f;
         Radius = 0f;
         RemoveDistance = 200.0f;
 
@@ -24,7 +24,7 @@ public class Bullet : Ammo
             } 
 
             exp.Play();
-            transform.Find("default").GetComponent<Renderer>().enabled = false;
+            //transform.Find("default").GetComponent<Renderer>().enabled = false;
             body.velocity = Vector3.zero;
             alreadyDamaged = true;
             Destroy(gameObject, exp.main.duration);

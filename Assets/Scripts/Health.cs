@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine.UI;
 
 [Serializable]
@@ -19,10 +20,15 @@ public class Health
         HealthSlider.transform.Find("Fill Area").gameObject.SetActive(!IsDead);
     }
 
-    public void SetHealth(float maxHealth)
+    public void SetMaxHealth(float maxHealth)
     {
         MaxHealth = maxHealth;
         CurrentHealth = MaxHealth;
+    }
+
+    public void Heal(float heal) {
+        CurrentHealth = math.min(CurrentHealth + heal, MaxHealth);
+        return;
     }
 
     public void Damage(float damage)

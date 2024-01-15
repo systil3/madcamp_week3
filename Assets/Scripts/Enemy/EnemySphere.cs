@@ -71,7 +71,11 @@ public class EnemySphere : EnemyBase
     {
         float sphereElapsedTime = 0f;
         while (sphereElapsedTime < SphereLifeTime)
-        {
+        
+        {   
+            if(currentState == EnemyState.Dead) {
+                break;
+            }
             //속도 적용
             projectileTransform.Translate(direction * SphereSpeed * Time.deltaTime, Space.World);
 
