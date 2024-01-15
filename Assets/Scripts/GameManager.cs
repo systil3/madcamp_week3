@@ -102,6 +102,18 @@ public class GameManager : MonoBehaviour
         {
             AlertText.text = "You cleared!";
         }
+        else
+        {
+            AlertText.text = "You killed!";
+        }
+
+        StartCoroutine(ClearAlertCoroutine(2.0f));
+    }
+
+    IEnumerator ClearAlertCoroutine(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        AlertText.text = "";
     }
 
     IEnumerator PlayerDeadCoroutine()
@@ -143,7 +155,16 @@ public class GameManager : MonoBehaviour
     {
         if (health.IsDead) return true;
         health.Damage(damage);
-        if (health.IsDead) EnemyDead(health);
+
+        if (health.IsDead)
+        {
+            EnemyDead(health);
+        }
+        else
+        {
+            AlertText.text = "Hit!";
+            StartCoroutine(ClearAlertCoroutine(0.5f));
+        }
         return health.IsDead;
     }
 }

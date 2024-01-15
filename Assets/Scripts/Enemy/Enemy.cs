@@ -25,6 +25,8 @@ public class Enemy : EnemyBase
 
     public override void OnCombat() { }
 
+    public override void OnDormant() { }
+
     public override void Die()
     {
         ps.Stop();

@@ -3,13 +3,11 @@ using UnityEngine;
 public class DamageSphereParticle : MonoBehaviour
 {
     public GameManager GameManager;
-    public float Damage = 5.0f;
+    public float Damage;
 
-    void OnTriggerEnter(Collider other)
+    void OnParticleTrigger()
     {
-        if (other.CompareTag("Player"))
-        {
-            GameManager.DamageToPlayer(Damage);
-        }
+        Debug.Log("Sparkle!");
+        GameManager.DamageToPlayer(Damage);
     }
 }

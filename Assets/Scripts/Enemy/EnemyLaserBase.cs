@@ -78,11 +78,7 @@ public abstract class EnemyLaserBase : EnemyBase
     {
         if (LaserTime > LaserPeriod + LaserFiringTime)
         {
-            // 발사 종료
-            LaserTime = 0;
-            isFiringLaser = false;
-            LaserLine.enabled = false;
-            LaserFireEmissionModule.enabled = false;
+            OnDormant();
         }
 
         if (LaserTime > LaserPeriod)
@@ -92,7 +88,6 @@ public abstract class EnemyLaserBase : EnemyBase
 
             if (!isFiringLaser)
             {
-                //LaserFireSignEmissionModule.enabled = false;
                 laserStartPoint = body.position + new Vector3(-2, 2, 0);
                 isFiringLaser = true;
                 LaserLine.enabled = true;
@@ -109,7 +104,7 @@ public abstract class EnemyLaserBase : EnemyBase
             if (hit.collider != null && hit.collider.gameObject.CompareTag("Player"))
             {
                 Player player = Player.GetComponent<Player>();
-                if (!player.IsShaking) StartCoroutine(Shake(player));
+                StartCoroutine(Shake(player));
                 GameManager.DamageToPlayer(Damage);
             }
         }
@@ -129,10 +124,17 @@ public abstract class EnemyLaserBase : EnemyBase
         LaserTime += Time.deltaTime;
     }
 
+    public override void OnDormant()
+    {
+        // 발사 종료
+        LaserTime = 0;
+        isFiringLaser = false;
+        LaserLine.enabled = false;
+        LaserFireEmissionModule.enabled = false;
+    }
+
     IEnumerator Shake(Player player)
     {
-        player.IsShaking = true;
-
         float halfDuration = DamageDuration / 2;
         float elapsed = 0f;
         float tick = Random.Range(0f, 1000f);
@@ -146,6 +148,6 @@ public abstract class EnemyLaserBase : EnemyBase
             yield return null;
         }
 
-        player.IsShaking = false;
+        Camera.main.transform.localPosition = player.CameraOffset;
     }
 }

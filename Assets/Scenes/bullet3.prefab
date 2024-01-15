@@ -100,6 +100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Damage: 10
+  Radius: 0
   RemoveDistance: 200
 --- !u!199 &-1007874417538793476
 ParticleSystemRenderer:

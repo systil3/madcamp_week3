@@ -9,9 +9,11 @@ public class Player : MonoBehaviour
     public GameManager GameManager;
     public LayerMask GroundLayer;
 
+    // 총 관련
     public GunType CurrentGunType = GunType.Pistol;
     public List<Gun> Guns;
     public AudioClip GunshotSound;
+    float shootDelay = 0;
 
     // 이동 관련
     public float Speed = 20.0f;
@@ -19,13 +21,14 @@ public class Player : MonoBehaviour
     public float JumpForce = 3.0f;
     public bool IsFreeze = false;
     float initialSpeed;
+    bool isJumping = false;
+    bool isClimbing = false;
 
-    public float SpeedSlowDownRatio = 0.5f;
     public bool IsSlowedDown = false;
 
     // 총알 관련
     public GameObject BulletObject;
-    public float BulletForce = 50.0f;
+    public float BulletForce = 30.0f;
 
     // 반동 관련
     public float RecoilForce = 20.0f; // 반동 힘
@@ -35,21 +38,19 @@ public class Player : MonoBehaviour
 
     // 카메라 관련
     public Vector3 CameraOffset;
-    public bool IsShaking = false;
     float xRotate, yRotate, xRotateMove, yRotateMove;
-
-    bool isJumping = false;
-    bool isClimbing = false;
-    float shootDelay = 0;
+    float cameraTick;
 
     Rigidbody body;
-    AudioSource audioSource; // AudioSource 컴포넌트
+    AudioSource audioSource;
+    Transform armTransform;
 
     void Awake()
     {
+        CameraOffset = Camera.main.transform.localPosition;
         body = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
-        CameraOffset = Camera.main.transform.localPosition;
+        armTransform = transform.Find("Arm");
         initialSpeed = Speed;
 
 #if UNITY_EDITOR
@@ -60,31 +61,16 @@ public class Player : MonoBehaviour
     void Update()
     {
         if (GameManager.PlayerHealth.IsDead) return;
+        if (IsFreeze) return;
         GameManager.UpdateEnemyHealthIndex(transform);
         isJumping = !Physics.Raycast(transform.position, Vector3.down, 2.0f, GroundLayer);
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            CurrentGunType = GunType.Pistol;
-            Debug.Log("Changed to Pistol!");
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            CurrentGunType = GunType.Rapid;
-            Debug.Log("Change to Rapid!");
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            CurrentGunType = GunType.Grenade;
-            Debug.Log("Changed to Grenade!");
-        }
-
         Shoot();
     }
 
     void FixedUpdate()
     {
         if (GameManager.PlayerHealth.IsDead) return;
+        if (IsFreeze) return;
         Move();
         Jump();
     }
@@ -93,21 +79,26 @@ public class Player : MonoBehaviour
     {
         if (GameManager.PlayerHealth.IsDead) return;
         RotateWithMouse();
-        if (!IsShaking) Camera.main.transform.localPosition = CameraOffset;
     }
 
     void Move()
     {
-        if (IsFreeze) return;
-
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
         if (!(h == 0 && v == 0))
         {
-            Vector3 dir = new Vector3(h, 0, v * 0.75f);
-            Vector3 transformedDir = TransformDirectionRelativeToPlayer(dir);
-            body.velocity = new Vector3(transformedDir.x * Speed, body.velocity.y, transformedDir.z * Speed);
+            Vector3 dir = TransformDirectionRelativeToPlayer(new Vector3(h, 0, v * 0.75f));
+            body.velocity = new Vector3(dir.x * Speed, body.velocity.y, dir.z * Speed);
+
+            Vector3 noise = new Vector3(0, Mathf.PerlinNoise(0, cameraTick) - 0.5f, 0);
+            Camera.main.transform.localPosition = CameraOffset + noise * 0.2f;
+            cameraTick += Time.deltaTime * 4.0f;
+        }
+        else
+        {
+            cameraTick = Random.Range(0f, 1000f);
+            Camera.main.transform.localPosition = CameraOffset;
         }
     }
 
@@ -120,16 +111,16 @@ public class Player : MonoBehaviour
         return transformedDirection;
     }
 
-    public void SlowDownSpeed()
+    public void SlowDownSpeed(float ratio)
     {
         if (!IsSlowedDown)
         {
-            Speed *= SpeedSlowDownRatio;
+            Speed *= ratio;
             IsSlowedDown = true;
         }
     }
 
-    public void ReturnPlayerSpeed()
+    public void ReturnSpeed()
     {
         if (IsSlowedDown)
         {
@@ -182,6 +173,25 @@ public class Player : MonoBehaviour
 
     void Shoot()
     {
+        if (Input.GetKeyDown(KeyCode.Alpha1) && CurrentGunType != GunType.Pistol)
+        {
+            CurrentGunType = GunType.Pistol;
+            StartCoroutine(ChangeGunCoroutine());
+            Debug.Log("Changed to Pistol!");
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && CurrentGunType != GunType.Rapid)
+        {
+            CurrentGunType = GunType.Rapid;
+            StartCoroutine(ChangeGunCoroutine());
+            Debug.Log("Change to Rapid!");
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3) && CurrentGunType != GunType.Grenade)
+        {
+            CurrentGunType = GunType.Grenade;
+            StartCoroutine(ChangeGunCoroutine());
+            Debug.Log("Changed to Grenade!");
+        }
+
         if ((CurrentGunType != GunType.Rapid && Input.GetButtonDown("Fire1")) || (CurrentGunType == GunType.Rapid && Input.GetButton("Fire1")))
         {
             Gun currentGun = Guns.FirstOrDefault(e => e.Type == CurrentGunType);
@@ -206,7 +216,7 @@ public class Player : MonoBehaviour
                         audioSource.PlayOneShot(GunshotSound);
                     }
 
-                    StartRecoil();
+                    StartCoroutine(RecoilCoroutine());
                 }
                 else if (CurrentGunType == GunType.Grenade)
                 {
@@ -214,7 +224,7 @@ public class Player : MonoBehaviour
                     mainModule.duration = 3.5f;
                     mainModule.startSize = new ParticleSystem.MinMaxCurve(10.5f, 11.5f);
 
-                    rigid.AddForce(forward * BulletForce / 2, ForceMode.Impulse);
+                    rigid.AddForce(forward * BulletForce * 1.5f, ForceMode.Impulse);
 
                     // 발사 소리 재생
                     if (GunshotSound != null)
@@ -230,14 +240,18 @@ public class Player : MonoBehaviour
         shootDelay += Time.deltaTime;
     }
 
-    void StartRecoil()
+    IEnumerator ChangeGunCoroutine()
     {
-        if (!IsShaking) StartCoroutine(RecoilCoroutine());
+        IsFreeze = true;
+        armTransform.Rotate(90, -90, 0);
+        yield return new WaitForSeconds(0.1f);
+        // TODO: Change gun model
+        armTransform.Rotate(0, 90, -90);
+        IsFreeze = false;
     }
 
     IEnumerator RecoilCoroutine()
     {
-        IsShaking = true;
         body.AddForce(-transform.forward.x * RecoilForce, Mathf.Min(-transform.forward.y * RecoilForce, 1.0f), -transform.forward.z * RecoilForce, ForceMode.Impulse);
 
         //float elapsedTime = 0f;
@@ -267,13 +281,13 @@ public class Player : MonoBehaviour
         while (elapsed < RecoilDuration)
         {
             Vector3 noise = new Vector3(Mathf.PerlinNoise(100, tick), Mathf.PerlinNoise(200, tick), Mathf.PerlinNoise(300, tick)) - 0.5f * Vector3.one;
-            Camera.main.transform.localPosition = CameraOffset + noise * 5.0f * Mathf.PingPong(elapsed, halfDuration);
-            tick += Time.deltaTime * 2.0f;
+            Camera.main.transform.localPosition = CameraOffset + noise * 4.0f * Mathf.PingPong(elapsed, halfDuration);
+            tick += Time.deltaTime * 0.5f;
             elapsed += Time.deltaTime / halfDuration;
             yield return null;
         }
 
-        IsShaking = false;
+        Camera.main.transform.localPosition = CameraOffset;
     }
 
     void OnCollisionEnter(Collision collision)

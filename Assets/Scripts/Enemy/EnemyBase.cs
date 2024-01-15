@@ -39,6 +39,7 @@ public abstract class EnemyBase : MonoBehaviour
         switch (currentState)
         {
             case EnemyState.Dormant:
+                OnDormant();
                 if (distanceToPlayer < DetectionRange)
                 {
                     currentState = EnemyState.Combat;
@@ -47,6 +48,7 @@ public abstract class EnemyBase : MonoBehaviour
                 }
                 break;
             case EnemyState.Combat:
+                OnCombat();
                 if (distanceToPlayer > DetectionRange)
                 {
                     currentState = EnemyState.Dormant;
@@ -63,7 +65,6 @@ public abstract class EnemyBase : MonoBehaviour
 
         if (!navMeshAgent.isStopped)
         {
-            OnCombat();
             navMeshAgent.SetDestination(Player.position);
         }
     }
@@ -79,6 +80,8 @@ public abstract class EnemyBase : MonoBehaviour
     }
 
     public abstract void OnCombat();
+
+    public abstract void OnDormant();
 
     public void TakeDamage(float damage)
     {

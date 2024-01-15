@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemySphere : EnemyBase
@@ -16,11 +18,12 @@ public class EnemySphere : EnemyBase
 
     //파티클 관련
     public int NumberOfParticles = 100;
-    ParticleSystem particleSystemPrefab;
 
+    ParticleSystem particleSystemPrefab;
     ParticleSystem particleSystemInstance;
     Transform particleTransform;
-    GameObject projectile;
+
+    List<GameObject> projectiles = new List<GameObject>();
 
     public override void Awake()
     {
@@ -32,13 +35,18 @@ public class EnemySphere : EnemyBase
         damageSphere.GameManager = GameManager;
         damageSphere.Damage = Damage;
 
-        particleTransform = DamageSphere.transform.Find("Electricity");
-        particleTransform.GetComponent<DamageSphereParticle>().GameManager = GameManager;
-        particleSystemPrefab = particleTransform.GetComponent<ParticleSystem>();
+        DamageSphereParticle damageSphereParticle = DamageSphere.transform.Find("Electricity").GetComponent<DamageSphereParticle>();
+        damageSphereParticle.GameManager = GameManager;
+        damageSphereParticle.Damage = Damage / 4.0f;
+
+        particleSystemPrefab = damageSphereParticle.GetComponent<ParticleSystem>();
+        particleSystemPrefab.trigger.SetCollider(0, Player);
 
         // 파티클 시스템 프리팹을 인스턴스화
+        /*
         particleSystemInstance = Instantiate(particleSystemPrefab);
         particleTransform = particleSystemInstance.transform;
+        */
     }
 
     public override void OnCombat()
@@ -52,9 +60,11 @@ public class EnemySphere : EnemyBase
         }
     }
 
+    public override void OnDormant() { }
+
     public override void Die()
     {
-        Destroy(projectile);
+        projectiles.ForEach(Destroy);
         Destroy(gameObject, 3f);
     }
 
@@ -63,25 +73,26 @@ public class EnemySphere : EnemyBase
         // 플레이어 방향으로 구체 발사
         Vector3 direction = (Player.position - muzzleTransform.position).normalized;
         GameObject projectile = Instantiate(DamageSphere, muzzleTransform.position, Quaternion.identity);
+        projectiles.Add(projectile);
         // 발사된 구체의 크기를 점점 키우기
-        StartCoroutine(ScaleProjectileOverTime(direction, projectile.transform));
+        StartCoroutine(ScaleProjectileOverTime(direction, projectile));
     }
 
-    IEnumerator ScaleProjectileOverTime(Vector3 direction, Transform projectileTransform)
+    IEnumerator ScaleProjectileOverTime(Vector3 direction, GameObject projectile)
     {
         float sphereElapsedTime = 0f;
-        while (sphereElapsedTime < SphereLifeTime)
+        while (sphereElapsedTime < SphereLifeTime && !projectile.IsDestroyed())
         {
             //속도 적용
-            projectileTransform.Translate(direction * SphereSpeed * Time.deltaTime, Space.World);
+            projectile.transform.Translate(direction * SphereSpeed * Time.deltaTime, Space.World);
 
             //스케일 적용
             sphereScale = Mathf.Lerp(1f, 1f + SphereScaleRate, sphereElapsedTime / SphereLifeTime);
-            Transform sphereTransformSurface = projectileTransform.Find("Surface");
+            Transform sphereTransformSurface = projectile.transform.Find("Surface");
             sphereTransformSurface.localScale = Vector3.one * sphereScale;
 
             //파티클 스케일 일정하게 유지
-            Transform sphereTransformParticle = projectileTransform.Find("Electricity");
+            Transform sphereTransformParticle = projectile.transform.Find("Electricity");
             ParticleSystem sphereParticleSystem = sphereTransformParticle.GetComponent<ParticleSystem>();
 
             var mainModule = sphereParticleSystem.main;
@@ -94,6 +105,7 @@ public class EnemySphere : EnemyBase
             yield return null;
         }
 
-        Destroy(projectileTransform.gameObject);
+        Destroy(projectile);
+        projectiles.Remove(projectile);
     }
 }

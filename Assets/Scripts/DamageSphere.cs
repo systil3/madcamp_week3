@@ -12,7 +12,7 @@ public class DamageSphere : MonoBehaviour
         {
             isPlayerTriggering = true;
             GameManager.DamageToPlayer(Damage);
-            other.GetComponent<Player>().SlowDownSpeed();
+            other.GetComponent<Player>().SlowDownSpeed(0.5f);
         }
     }
 
@@ -20,7 +20,7 @@ public class DamageSphere : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            other.GetComponent<Player>().ReturnPlayerSpeed();
+            other.GetComponent<Player>().ReturnSpeed();
             isPlayerTriggering = false;
         }
     }
@@ -29,7 +29,7 @@ public class DamageSphere : MonoBehaviour
     {
         if (isPlayerTriggering)
         {
-            GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().ReturnPlayerSpeed();
+            GameObject.FindGameObjectWithTag("Player")?.GetComponent<Player>()?.ReturnSpeed();
             isPlayerTriggering = false;
         }
     }
