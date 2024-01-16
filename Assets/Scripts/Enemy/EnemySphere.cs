@@ -23,8 +23,8 @@ public class EnemySphere : EnemyBase
     public float ShockFieldDamage = 30;
     public float ShockFieldDelay = 2;
     private bool isShockFieldEmitted = false;
-
     float sphereScale;
+
     Transform muzzleTransform;
 
     //파티클 관련

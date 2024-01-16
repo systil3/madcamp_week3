@@ -22,6 +22,9 @@ public abstract class EnemyBase : MonoBehaviour
     public float TimeToDormant = 5.0f;
     public Rigidbody Player;
 
+    protected float distanceToPlayer;
+    protected float angleToPlayer;
+
     protected EnemyState currentState;
     protected AIPath aiPath;
     protected CharacterController character;
@@ -41,8 +44,8 @@ public abstract class EnemyBase : MonoBehaviour
 
     public virtual void Update()
     {
-        float distanceToPlayer = Vector3.Distance(transform.position, Player.position);
-        float angleToPlayer = Vector3.Angle(Player.position - transform.position, transform.forward);
+        distanceToPlayer = Vector3.Distance(transform.position, Player.position);
+        angleToPlayer = Vector3.Angle(Player.position - transform.position, transform.forward);
 
         switch (currentState)
         {

@@ -3,6 +3,7 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 
 public class Player : MonoBehaviour
 {
@@ -99,7 +100,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            cameraTick = Random.Range(0f, 1000f);
+            cameraTick = UnityEngine.Random.Range(0f, 1000f);
             Camera.main.transform.localPosition = CameraOffset;
         }
     }
@@ -214,7 +215,7 @@ public class Player : MonoBehaviour
                         bulletObject = Grenade;
                         break;
                     case GunType.Shotgun:
-                        bulletObject = Pellet;
+                        bulletObject = Bullet;
                         break;
                     default:
                         throw new System.Exception("invalid gun type");
@@ -251,24 +252,27 @@ public class Player : MonoBehaviour
                         audioSource.PlayOneShot(GunshotSound);
                     }
                 }
-                else if (CurrentGunType == GunType.Shotgun)
-                {
-                    int numberOfPellets = 10;
+                else if (CurrentGunType == GunType.Shotgun) {
+
+                    int numberOfPellets = 8 ;
                     for (int i = 0; i < numberOfPellets; i++)
                     {
-                        // 단위원 위 무작위 2D 벡터를 얻음
-                        Vector2 randomDirection2D = Random.insideUnitCircle;
 
-                        // 플레이어의 방향을 기준으로 1m 앞에 위치한 1m 반경의 원 위로 이동
-                        Vector3 spawnPosition = transform.position + (TransformDirectionRelativeToPlayer(Vector3.forward) + Vector3.up) * 0.8f;
+                        GameObject pelletInstance = Instantiate(bulletObject, transform.position + (forward + Vector3.up) * 0.8f, transform.rotation);
+                        Rigidbody pelletRigidBody = pelletInstance.GetComponent<Rigidbody>();
 
-                        // 2D 벡터를 3D로 확장하여 힘을 가함
-                        Vector3 randomDirection3D = new Vector3(randomDirection2D.x, randomDirection2D.y, 3f).normalized;
-                        bulletRigidBody.AddForce(randomDirection3D * currentGun.Force, ForceMode.Impulse);
+                        // 단위원을 각도 기준 n분할하여 펠릿 배치
+                        float angle = (2*math.PI / numberOfPellets) * i;
+                        float ratio = 0.5f+UnityEngine.Random.Range(-0.2f, 0.2f);
+                        Vector2 pelletDirection = new Vector3(math.cos(angle) * ratio, 
+                                                                math.sin(angle) * ratio, 5).normalized;
+                                                    
+                        Vector3 pelletForward = TransformDirectionRelativeToPlayer(pelletDirection);
+                        pelletRigidBody.AddForce(pelletForward * currentGun.Force, ForceMode.Impulse);
 
                         // 데미지를 펠릿 수로 나눔
-                        Pellet pellet = bulletInstance.GetComponent<Pellet>();
-                        pellet.Damage /= numberOfPellets;
+                        Bullet pellet = pelletInstance.GetComponent<Bullet>();
+                        pellet.Damage = currentGun.Damage / numberOfPellets;
                     }
                 }
 
@@ -329,7 +333,7 @@ public class Player : MonoBehaviour
 
         float halfDuration = duration / 2;
         float elapsed = 0f;
-        float tick = Random.Range(0f, 500f);
+        float tick = UnityEngine.Random.Range(0f, 500f);
 
         while (elapsed < duration)
         {
@@ -384,4 +388,3 @@ public class Player : MonoBehaviour
         }
     }
 }
-
