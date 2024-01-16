@@ -7692,7 +7692,7 @@ MonoBehaviour:
   Damage: 10
   DamageDuration: 1
   DetectionRange: 80
-  DetectionAngle: 90
+  DetectionAngle: 170
   MaxHeight: 15
   Player: {fileID: 42739578}
   ParticleForce: 20

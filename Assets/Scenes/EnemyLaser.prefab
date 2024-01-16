@@ -5290,7 +5290,7 @@ MonoBehaviour:
   Damage: 0.2
   DamageDuration: 1
   DetectionRange: 60
-  DetectionAngle: 120
+  DetectionAngle: 180
   MaxHeight: 15
   Player: {fileID: 0}
   LaserPeriod: 2

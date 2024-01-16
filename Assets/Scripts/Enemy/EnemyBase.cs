@@ -19,6 +19,7 @@ public abstract class EnemyBase : MonoBehaviour
     public float DetectionRange;
     public float DetectionAngle;
     public float MaxHeight = 20.0f;
+    public float TimeToDormant = 5.0f;
     public Rigidbody Player;
 
     protected EnemyState currentState;
@@ -26,6 +27,7 @@ public abstract class EnemyBase : MonoBehaviour
     protected CharacterController character;
 
     bool isTrackingByDamage = false;
+    float elapsedToDormant = 0.0f;
 
     public virtual void Awake()
     {
@@ -73,10 +75,19 @@ public abstract class EnemyBase : MonoBehaviour
 
                 if (!isTrackingByDamage && (distanceToPlayer > DetectionRange || angleToPlayer > DetectionAngle))
                 {
-                    currentState = EnemyState.Dormant;
-                    aiPath.isStopped = true;
-                    StartCoroutine(Roaming());
-                    Debug.Log("Returning to dormant state.");
+                    if (elapsedToDormant >= TimeToDormant)
+                    {
+                        currentState = EnemyState.Dormant;
+                        aiPath.isStopped = true;
+                        elapsedToDormant = 0.0f;
+                        StartCoroutine(Roaming());
+                        Debug.Log("Returning to dormant state.");
+                    }
+                    elapsedToDormant += Time.deltaTime;
+                }
+                else
+                {
+                    elapsedToDormant = 0.0f;
                 }
                 break;
             case EnemyState.Dead:
@@ -85,7 +96,7 @@ public abstract class EnemyBase : MonoBehaviour
         }
     }
 
-    void LateUpdate()
+    public virtual void LateUpdate()
     {
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, 0, MaxHeight), transform.position.z);
     }
