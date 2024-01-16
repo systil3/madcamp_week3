@@ -177,26 +177,22 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1) && CurrentGunType != GunType.Pistol)
         {
-            CurrentGunType = GunType.Pistol;
-            StartCoroutine(ChangeGunCoroutine());
+            StartCoroutine(ChangeGunCoroutine(GunType.Pistol));
             Debug.Log("Changed to Pistol!");
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2) && CurrentGunType != GunType.Rapid)
         {
-            CurrentGunType = GunType.Rapid;
-            StartCoroutine(ChangeGunCoroutine());
+            StartCoroutine(ChangeGunCoroutine(GunType.Rapid));
             Debug.Log("Change to Rapid!");
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3) && CurrentGunType != GunType.Grenade)
         {
-            CurrentGunType = GunType.Grenade;
-            StartCoroutine(ChangeGunCoroutine());
+            StartCoroutine(ChangeGunCoroutine(GunType.Grenade));
             Debug.Log("Changed to Grenade!");
         }
         else if (Input.GetKeyDown(KeyCode.Alpha4) && CurrentGunType != GunType.Shotgun)
         {
-            CurrentGunType = GunType.Shotgun;
-            StartCoroutine(ChangeGunCoroutine());
+            StartCoroutine(ChangeGunCoroutine(GunType.Shotgun));
             Debug.Log("Changed to ShotGun!");
         }
 
@@ -284,13 +280,46 @@ public class Player : MonoBehaviour
         shootDelay += Time.deltaTime;
     }
 
-    IEnumerator ChangeGunCoroutine()
+    IEnumerator ChangeGunCoroutine(GunType gunType)
     {
         IsFreeze = true;
         armTransform.Rotate(90, -90, 0);
         yield return new WaitForSeconds(0.1f);
-        // TODO: Change gun model
+
+        switch (CurrentGunType)
+        {
+            case GunType.Pistol:
+                armTransform.Find("Pistol").gameObject.SetActive(false);
+                break;
+            case GunType.Rapid:
+                armTransform.Find("SMG").gameObject.SetActive(false);
+                break;
+            case GunType.Grenade:
+                armTransform.Find("Grenade").gameObject.SetActive(false);
+                break;
+            case GunType.Shotgun:
+                armTransform.Find("Shotgun").gameObject.SetActive(false);
+                break;
+        }
+
+        switch (gunType)
+        {
+            case GunType.Pistol:
+                armTransform.Find("Pistol").gameObject.SetActive(true);
+                break;
+            case GunType.Rapid:
+                armTransform.Find("SMG").gameObject.SetActive(true);
+                break;
+            case GunType.Grenade:
+                armTransform.Find("Grenade").gameObject.SetActive(true);
+                break;
+            case GunType.Shotgun:
+                armTransform.Find("Shotgun").gameObject.SetActive(true);
+                break;
+        }
+
         armTransform.Rotate(0, 90, -90);
+        CurrentGunType = gunType;
         IsFreeze = false;
     }
 
