@@ -20,6 +20,9 @@ public abstract class EnemyBase : MonoBehaviour
     public float DetectionAngle;
     public Rigidbody Player;
 
+    protected float distanceToPlayer;
+    protected float angleToPlayer;
+
     protected EnemyState currentState;
     protected NavMeshAgent navMeshAgent;
     protected Rigidbody body;
@@ -39,8 +42,8 @@ public abstract class EnemyBase : MonoBehaviour
 
     public virtual void Update()
     {
-        float distanceToPlayer = Vector3.Distance(transform.position, Player.position);
-        float angleToPlayer = Vector3.Angle(Player.position - transform.position, transform.forward);
+        distanceToPlayer = Vector3.Distance(transform.position, Player.position);
+        angleToPlayer = Vector3.Angle(Player.position - transform.position, transform.forward);
 
         switch (currentState)
         {

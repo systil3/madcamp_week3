@@ -10,10 +10,20 @@ public class EnemySphere : EnemyBase
     float elapsedTime = 5f + 1f;
 
     public GameObject DamageSphere;
+    public GameObject ShockFieldSignPrefab;
+    public GameObject ShockFieldParticlesPrefab;
+    public GameObject ShockFieldSign;
+    public GameObject ShockFieldParticles;
     public float SphereSpeed = 10f;
     public float SphereScaleRate = 20f;
-
     float sphereScale;
+    public float ShockFieldDetectionRange = 10;
+    public float TimeBetweenShock = 3;
+    public float ShockFieldElapsedTime = 0;
+    public float ShockFieldDamage = 30;
+    public float ShockFieldDelay = 2;
+    private bool isShockFieldEmitted = false;
+
     Transform muzzleTransform;
 
     //파티클 관련
@@ -42,21 +52,64 @@ public class EnemySphere : EnemyBase
         particleSystemPrefab = damageSphereParticle.GetComponent<ParticleSystem>();
         particleSystemPrefab.trigger.SetCollider(0, Player);
 
-        // 파티클 시스템 프리팹을 인스턴스화
-        /*
-        particleSystemInstance = Instantiate(particleSystemPrefab);
-        particleTransform = particleSystemInstance.transform;
-        */
+        //충격파
+        //shockFieldSignObject = Instantiate(ShockFieldSign, muzzleTransform.position, Quaternion.identity);    
+        ShockFieldSign = Instantiate(ShockFieldSignPrefab, muzzleTransform.position, Quaternion.identity);
+        ShockFieldParticles = Instantiate(ShockFieldParticlesPrefab, muzzleTransform.position, Quaternion.identity);
+        ShockFieldSign.transform.parent = transform;
+        ShockFieldParticles.transform.parent = transform;
+
+        //인식 범위대로 사전 설정
+        ParticleSystem shock = ShockFieldSign.GetComponent<ParticleSystem>();
+        ParticleSystem glow = ShockFieldSign.transform.Find("Glow").GetComponent<ParticleSystem>();
+        ParticleSystem.MainModule glowMain = glow.main;
+        ParticleSystem.MainModule shockMain = shock.main;
+        glowMain.startLifetime = TimeBetweenShock;
+        shockMain.startLifetime = TimeBetweenShock;
+        projectiles.Add(ShockFieldSign);
+        ShockFieldSign.SetActive(false);
+        
+        //충격파 인식 범위대로 효과 반지름 설정
+        ParticleSystem.MainModule shockGlowMain = ShockFieldParticles.transform.Find("Glow")
+                                                                .GetComponent<ParticleSystem>().main;
+        shockGlowMain.startSize = ShockFieldDetectionRange += 0.5f;
     }
 
     public override void OnCombat()
     {
-        // 적이 일정 시간마다 발사
-        elapsedTime += Time.deltaTime;
-        if (elapsedTime >= TimeBetweenShots)
-        {
-            ShootProjectile();
-            elapsedTime = 0f;
+        // 플레이어가 어느정도 떨어져 있을 시, 일정 시간마다 구체 발사
+        if(distanceToPlayer >= ShockFieldDetectionRange) {
+
+            ShockFieldElapsedTime = 0;
+            ShockFieldSign.SetActive(false);
+
+            if (elapsedTime >= TimeBetweenShots)
+            {
+                ShootProjectile();
+                elapsedTime = 0f;
+            }
+            elapsedTime += Time.deltaTime;
+        } 
+        // 플레이어가 일정 이상 너무 가까이 있을 경우, 충격파 신호 후 발산 
+        else {
+            if(ShockFieldElapsedTime >= TimeBetweenShock + ShockFieldDelay) {
+                ShockFieldElapsedTime = 0;
+                isShockFieldEmitted = false;
+            }
+
+            else if(ShockFieldElapsedTime >= TimeBetweenShock) {
+                if(!isShockFieldEmitted) {
+                    EmitShockField();
+                    isShockFieldEmitted = true;
+                    ShockFieldSign.SetActive(false);
+                }
+
+                ShockFieldElapsedTime += Time.deltaTime;
+                
+            } else {
+                ShockFieldSign.SetActive(true);
+                ShockFieldElapsedTime += Time.deltaTime;
+            }
         }
     }
 
@@ -76,6 +129,15 @@ public class EnemySphere : EnemyBase
         projectiles.Add(projectile);
         // 발사된 구체의 크기를 점점 키우기
         StartCoroutine(ScaleProjectileOverTime(direction, projectile));
+    }
+
+    void EmitShockField() {
+        // 플레이어 방향으로 충격파 발산, 회피할 수 없음
+        ParticleSystem[] particles = ShockFieldParticles.GetComponentsInChildren<ParticleSystem>();
+        foreach(var particle in particles) {
+            particle.Play();
+        }
+        GameManager.DamageToPlayer(ShockFieldDamage);
     }
 
     IEnumerator ScaleProjectileOverTime(Vector3 direction, GameObject projectile)
