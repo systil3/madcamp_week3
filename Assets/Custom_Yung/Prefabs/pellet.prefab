@@ -4851,32 +4851,16 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ce51eff75420eb4c808ba3925a395f2, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.31220543
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 4ce51eff75420eb4c808ba3925a395f2, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.047
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 4ce51eff75420eb4c808ba3925a395f2, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -27.197945
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 4ce51eff75420eb4c808ba3925a395f2, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071067
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ce51eff75420eb4c808ba3925a395f2, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 4ce51eff75420eb4c808ba3925a395f2, type: 3}
-      propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ce51eff75420eb4c808ba3925a395f2, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4ce51eff75420eb4c808ba3925a395f2, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -4897,6 +4881,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 4ce51eff75420eb4c808ba3925a395f2, type: 3}
       propertyPath: m_Name
       value: pellet
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4ce51eff75420eb4c808ba3925a395f2, type: 3}
+      propertyPath: m_TagString
+      value: PlayerBullet
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9854,7 +9842,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c3f5cff201db334ba5c8ae18af9b5e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Damage: 50
+  Damage: 60
   Player: {fileID: 0}
 --- !u!4 &2195963603150677923 stripped
 Transform:

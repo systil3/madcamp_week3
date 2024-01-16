@@ -248,7 +248,7 @@ public class Player : MonoBehaviour
                 }
                 else if (CurrentGunType == GunType.Shotgun)
                 {
-                    int numberOfPellets = 16;
+                    int numberOfPellets = 8;
 
                     for (int i = 0; i < numberOfPellets; i++)
                     {
@@ -258,7 +258,7 @@ public class Player : MonoBehaviour
                         Vector3 pelletDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
                         Vector3 pelletForward = TransformDirectionRelativeToPlayer(pelletDirection);
 
-                        GameObject bulletInstance = Instantiate(bulletObject, position + pelletForward * 0.1f, transform.rotation);
+                        GameObject bulletInstance = Instantiate(bulletObject, position + pelletForward * 0.01f, transform.rotation);
                         Rigidbody bulletRigidbody = bulletInstance.GetComponent<Rigidbody>();
 
                         bulletRigidbody.AddForce((pelletForward + forward * 5) * currentGun.Force, ForceMode.Impulse);

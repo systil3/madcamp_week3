@@ -33,7 +33,7 @@ public abstract class Ammo : MonoBehaviour
 
     public virtual void OnCollisionEnter(Collision other)
     {
-        if (!alreadyDamaged && !other.gameObject.CompareTag("Player") && !other.gameObject.CompareTag("Bullet"))
+        if (!alreadyDamaged && !other.gameObject.CompareTag("Player") && !other.gameObject.CompareTag("PlayerBullet"))
         {
             OnCollision(other);
             exp.Play();
