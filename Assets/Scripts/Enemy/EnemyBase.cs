@@ -1,6 +1,6 @@
 using System.Collections;
+using Pathfinding;
 using UnityEngine;
-using UnityEngine.AI;
 
 public enum EnemyState
 {
@@ -18,11 +18,12 @@ public abstract class EnemyBase : MonoBehaviour
     public float DamageDuration;
     public float DetectionRange;
     public float DetectionAngle;
+    public float MaxHeight = 20.0f;
     public Rigidbody Player;
 
     protected EnemyState currentState;
-    protected NavMeshAgent navMeshAgent;
-    protected Rigidbody body;
+    protected AIPath aiPath;
+    protected CharacterController character;
 
     bool isTrackingByDamage = false;
 
@@ -30,10 +31,9 @@ public abstract class EnemyBase : MonoBehaviour
     {
         Health.CurrentHealth = Health.MaxHealth;
         currentState = EnemyState.Dormant;
-        navMeshAgent = GetComponent<NavMeshAgent>();
-        navMeshAgent.isStopped = true;
-        navMeshAgent.updateRotation = false;
-        body = GetComponent<Rigidbody>();
+        aiPath = GetComponent<AIPath>();
+        aiPath.isStopped = true;
+        character = GetComponent<CharacterController>();
         StartCoroutine(Roaming());
     }
 
@@ -50,7 +50,7 @@ public abstract class EnemyBase : MonoBehaviour
                 if (isTrackingByDamage || (distanceToPlayer < DetectionRange && angleToPlayer < DetectionAngle))
                 {
                     currentState = EnemyState.Combat;
-                    navMeshAgent.isStopped = false;
+                    aiPath.isStopped = false;
                     Debug.Log("Combat mode activated!");
                 }
                 break;
@@ -66,29 +66,28 @@ public abstract class EnemyBase : MonoBehaviour
                 float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
                 transform.eulerAngles = Vector3.up * angle;
                 */
-                Vector3 newDirection = Vector3.RotateTowards(transform.forward, Player.position - transform.position, navMeshAgent.angularSpeed * Time.deltaTime, 0.0f);
-                transform.rotation = Quaternion.LookRotation(newDirection);
+                //Vector3 newDirection = Vector3.RotateTowards(transform.forward, Player.position - transform.position, aiPath.rotationSpeed * Time.deltaTime, 0.0f);
+                //transform.rotation = Quaternion.LookRotation(newDirection);
 
-                OnCombat();
+                OnCombat(distanceToPlayer);
 
                 if (!isTrackingByDamage && (distanceToPlayer > DetectionRange || angleToPlayer > DetectionAngle))
                 {
                     currentState = EnemyState.Dormant;
-                    navMeshAgent.isStopped = true;
+                    aiPath.isStopped = true;
                     StartCoroutine(Roaming());
                     Debug.Log("Returning to dormant state.");
                 }
                 break;
             case EnemyState.Dead:
-                body.velocity = Vector3.zero;
-                navMeshAgent.isStopped = true;
+                aiPath.isStopped = true;
                 break;
         }
+    }
 
-        if (!navMeshAgent.isStopped)
-        {
-            navMeshAgent.SetDestination(Player.position);
-        }
+    void LateUpdate()
+    {
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, 0, MaxHeight), transform.position.z);
     }
 
     IEnumerator Roaming()
@@ -96,13 +95,19 @@ public abstract class EnemyBase : MonoBehaviour
         while (currentState == EnemyState.Dormant)
         {
             Vector3 randomDir = new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f));
-            body.velocity = randomDir * navMeshAgent.speed / 2;
-            transform.eulerAngles = new Vector3(Random.Range(0.0f, 360.0f), 0.0f, Random.Range(0.0f, 360.0f));
-            yield return new WaitForSeconds(2.0f);
+
+            float elapsed = 0.0f;
+            while (elapsed < 2.0f)
+            {
+                character.Move(randomDir * aiPath.maxSpeed * Time.deltaTime);
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(randomDir), aiPath.maxSpeed * Time.deltaTime);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
         }
     }
 
-    public abstract void OnCombat();
+    public abstract void OnCombat(float distanceToPlayer);
 
     public abstract void OnDormant();
 

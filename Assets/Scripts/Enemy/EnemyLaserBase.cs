@@ -74,7 +74,7 @@ public abstract class EnemyLaserBase : EnemyBase
 
     public abstract RaycastHit MakeLaser();
 
-    public override void OnCombat()
+    public override void OnCombat(float distanceToPlayer)
     {
         if (LaserTime > LaserPeriod + LaserFiringTime)
         {
@@ -88,7 +88,7 @@ public abstract class EnemyLaserBase : EnemyBase
 
             if (!isFiringLaser)
             {
-                laserStartPoint = body.position + new Vector3(-2, 2, 0);
+                laserStartPoint = transform.position + new Vector3(-2, 2, 0);
                 isFiringLaser = true;
                 LaserLine.enabled = true;
                 LaserLine.startColor = new Color(1f, 0, 0);
