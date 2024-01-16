@@ -17,11 +17,14 @@ public abstract class EnemyBase : MonoBehaviour
     public float Damage;
     public float DamageDuration;
     public float DetectionRange;
+    public float DetectionAngle;
     public Rigidbody Player;
 
     protected EnemyState currentState;
     protected NavMeshAgent navMeshAgent;
     protected Rigidbody body;
+
+    bool isTrackingByDamage = false;
 
     public virtual void Awake()
     {
@@ -29,18 +32,22 @@ public abstract class EnemyBase : MonoBehaviour
         currentState = EnemyState.Dormant;
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.isStopped = true;
+        navMeshAgent.updateRotation = false;
         body = GetComponent<Rigidbody>();
+        StartCoroutine(Roaming());
     }
 
     public virtual void Update()
     {
         float distanceToPlayer = Vector3.Distance(transform.position, Player.position);
+        float angleToPlayer = Vector3.Angle(Player.position - transform.position, transform.forward);
 
         switch (currentState)
         {
             case EnemyState.Dormant:
                 OnDormant();
-                if (distanceToPlayer < DetectionRange)
+
+                if (isTrackingByDamage || (distanceToPlayer < DetectionRange && angleToPlayer < DetectionAngle))
                 {
                     currentState = EnemyState.Combat;
                     navMeshAgent.isStopped = false;
@@ -48,8 +55,23 @@ public abstract class EnemyBase : MonoBehaviour
                 }
                 break;
             case EnemyState.Combat:
+                if (distanceToPlayer < DetectionRange && angleToPlayer < DetectionAngle)
+                {
+                    isTrackingByDamage = false;
+                }
+                /*
+                Vector2 forward = new Vector2(transform.position.z, transform.position.x);
+                Vector2 steeringTarget = new Vector2(navMeshAgent.steeringTarget.z, navMeshAgent.steeringTarget.x);
+                Vector2 dir = steeringTarget - forward;
+                float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+                transform.eulerAngles = Vector3.up * angle;
+                */
+                Vector3 newDirection = Vector3.RotateTowards(transform.forward, Player.position - transform.position, navMeshAgent.angularSpeed * Time.deltaTime, 0.0f);
+                transform.rotation = Quaternion.LookRotation(newDirection);
+
                 OnCombat();
-                if (distanceToPlayer > DetectionRange)
+
+                if (!isTrackingByDamage && (distanceToPlayer > DetectionRange || angleToPlayer > DetectionAngle))
                 {
                     currentState = EnemyState.Dormant;
                     navMeshAgent.isStopped = true;
@@ -73,9 +95,10 @@ public abstract class EnemyBase : MonoBehaviour
     {
         while (currentState == EnemyState.Dormant)
         {
-            Vector3 randomDir = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-            body.velocity = randomDir * navMeshAgent.speed;
-            yield return new WaitForSeconds(5.0f);
+            Vector3 randomDir = new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f));
+            body.velocity = randomDir * navMeshAgent.speed / 2;
+            transform.eulerAngles = new Vector3(Random.Range(0.0f, 360.0f), 0.0f, Random.Range(0.0f, 360.0f));
+            yield return new WaitForSeconds(2.0f);
         }
     }
 
@@ -91,6 +114,10 @@ public abstract class EnemyBase : MonoBehaviour
         {
             currentState = EnemyState.Dead;
             Die();
+        }
+        else
+        {
+            isTrackingByDamage = true;
         }
     }
 

@@ -252,7 +252,8 @@ MonoBehaviour:
     HealthText: {fileID: 0}
   Damage: 20
   DamageDuration: 1
-  DetectionRange: 100
+  DetectionRange: 80
+  DetectionAngle: 60
   Player: {fileID: 0}
   TimeBetweenShots: 6
   SphereLifeTime: 8

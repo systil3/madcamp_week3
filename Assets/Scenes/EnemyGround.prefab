@@ -5500,7 +5500,8 @@ MonoBehaviour:
     HealthText: {fileID: 0}
   Damage: 5
   DamageDuration: 1
-  DetectionRange: 80
+  DetectionRange: 50
+  DetectionAngle: 60
   Player: {fileID: 0}
   ParticleForce: 10
 --- !u!199 &4124300639072900528
