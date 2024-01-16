@@ -3,7 +3,6 @@ using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 
 public class Player : MonoBehaviour
 {
@@ -24,19 +23,15 @@ public class Player : MonoBehaviour
     float initialSpeed;
     bool isJumping = false;
     bool isClimbing = false;
-
-    public bool IsSlowedDown = false;
+    bool isSlowDown = false;
 
     // 총알 관련
-
     public GameObject Bullet;
     public GameObject Grenade;
     public GameObject Pellet;
     GameObject bulletObject;
 
     // 반동 관련
-    public float RecoilForce = 20.0f; // 반동 힘
-    public float RecoilDuration = 0.5f;
     Vector3 originalPosition;
     Vector3 wallNormal;
 
@@ -47,7 +42,7 @@ public class Player : MonoBehaviour
 
     Rigidbody body;
     Transform armTransform;
-    public Vector3 ArmOffset;
+    Vector3 armOffset;
     AudioSource audioSource;
 
     void Awake()
@@ -56,7 +51,7 @@ public class Player : MonoBehaviour
         body = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
         armTransform = transform.Find("Arm");
-        ArmOffset = armTransform.localPosition;
+        armOffset = armTransform.localPosition;
         initialSpeed = Speed;
 
 #if UNITY_EDITOR
@@ -85,11 +80,7 @@ public class Player : MonoBehaviour
     {
         if (GameManager.PlayerHealth.IsDead) return;
         RotateWithMouse();
-        /*
-        if (!IsShaking) {
-            arm.localPosition = ArmOffset;
-        }
-        */
+        // if (!IsShaking) arm.localPosition = ArmOffset;
     }
 
     void Move()
@@ -124,19 +115,19 @@ public class Player : MonoBehaviour
 
     public void SlowDownSpeed(float ratio)
     {
-        if (!IsSlowedDown)
+        if (!isSlowDown)
         {
             Speed *= ratio;
-            IsSlowedDown = true;
+            isSlowDown = true;
         }
     }
 
     public void ReturnSpeed()
     {
-        if (IsSlowedDown)
+        if (isSlowDown)
         {
             Speed = initialSpeed;
-            IsSlowedDown = false;
+            isSlowDown = false;
         }
     }
 
@@ -184,25 +175,25 @@ public class Player : MonoBehaviour
 
     void Shoot()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) && CurrentGunType != GunType.Pistol)
         {
             CurrentGunType = GunType.Pistol;
             StartCoroutine(ChangeGunCoroutine());
             Debug.Log("Changed to Pistol!");
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && CurrentGunType != GunType.Rapid)
         {
             CurrentGunType = GunType.Rapid;
             StartCoroutine(ChangeGunCoroutine());
             Debug.Log("Change to Rapid!");
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        else if (Input.GetKeyDown(KeyCode.Alpha3) && CurrentGunType != GunType.Grenade)
         {
             CurrentGunType = GunType.Grenade;
             StartCoroutine(ChangeGunCoroutine());
             Debug.Log("Changed to Grenade!");
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        else if (Input.GetKeyDown(KeyCode.Alpha4) && CurrentGunType != GunType.Shotgun)
         {
             CurrentGunType = GunType.Shotgun;
             StartCoroutine(ChangeGunCoroutine());
@@ -234,8 +225,6 @@ public class Player : MonoBehaviour
                 }
 
                 bulletObject.GetComponent<Ammo>().Damage = currentGun.Damage;
-                RecoilForce = currentGun.RecoilForce;
-                RecoilDuration = currentGun.RecoilDuration;
 
                 Vector3 forward = TransformDirectionRelativeToPlayer(Vector3.forward);
                 GameObject bulletInstance = Instantiate(bulletObject, transform.position + (forward + Vector3.up) * 0.8f, transform.rotation);
@@ -250,8 +239,6 @@ public class Player : MonoBehaviour
                     {
                         audioSource.PlayOneShot(GunshotSound);
                     }
-
-                    StartCoroutine(RecoilCoroutine());
                 }
                 else if (CurrentGunType == GunType.Grenade)
                 {
@@ -287,10 +274,9 @@ public class Player : MonoBehaviour
                         Pellet pellet = bulletInstance.GetComponent<Pellet>();
                         pellet.Damage /= numberOfPellets;
                     }
-
-                    StartCoroutine(RecoilCoroutine());
                 }
 
+                StartCoroutine(RecoilCoroutine(currentGun.RecoilForce, currentGun.RecoilDuration));
                 shootDelay = 0;
             }
         }
@@ -308,15 +294,15 @@ public class Player : MonoBehaviour
         IsFreeze = false;
     }
 
-    IEnumerator RecoilCoroutine()
+    IEnumerator RecoilCoroutine(float force, float duration)
     {
-        body.AddForce(-transform.forward.x * RecoilForce, Mathf.Min(-transform.forward.y * RecoilForce, 1.0f), -transform.forward.z * RecoilForce, ForceMode.Impulse);
+        body.AddForce(-transform.forward.x * force, Mathf.Min(-transform.forward.y * force, 1.0f), -transform.forward.z * force, ForceMode.Impulse);
 
-        float halfDuration = RecoilDuration / 2;
+        float halfDuration = duration / 2;
         float elapsed = 0f;
         float tick = Random.Range(0f, 500f);
 
-        while (elapsed < RecoilDuration)
+        while (elapsed < duration)
         {
             Vector3 noise = new Vector3(Mathf.PerlinNoise(100, tick), Mathf.PerlinNoise(200, tick), Mathf.PerlinNoise(300, tick)) - 0.5f * Vector3.one;
             Camera.main.transform.localPosition = CameraOffset + noise * 4.0f * Mathf.PingPong(elapsed, halfDuration);

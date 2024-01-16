@@ -269,8 +269,8 @@ MonoBehaviour:
     Damage: 20
     Force: 45
     ShootDelay: 2
-    RecoilForce: 20
-    RecoilDuration: 0.6
+    RecoilForce: 0
+    RecoilDuration: 0
   - Type: 3
     Damage: 50
     Force: 2
@@ -282,14 +282,10 @@ MonoBehaviour:
   RotationSpeed: 3
   JumpForce: 3
   IsFreeze: 0
-  IsSlowedDown: 0
   Bullet: {fileID: 85100285107660238, guid: 03bbc23d201323948b49836df98e8add, type: 3}
   Grenade: {fileID: 3756900663968967661, guid: 52cadfc1a29a4514f8f3ebe077421115, type: 3}
   Pellet: {fileID: 1527408497959632153, guid: 7324ffd43053b834195e6d26a77e538b, type: 3}
-  RecoilForce: 20
-  RecoilDuration: 0.5
   CameraOffset: {x: 0, y: 0, z: 0}
-  ArmOffset: {x: 0, y: 0, z: 0}
 --- !u!54 &42739578
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2278,6 +2274,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyGround (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 8896180695729148078, guid: f2be8bb1ebd46477b8300e98183db77b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3147,7 +3147,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 4
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -8390,7 +8390,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3810470826394628741, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3810470826394628741, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_TagString
@@ -8541,7 +8541,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1718688006383800966, guid: 393aae44b78684de19025e9e8c691005, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2058656364330960956, guid: 393aae44b78684de19025e9e8c691005, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9039,7 +9039,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3810470826394628741, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4587571167431092287, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9361,7 +9361,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d9ae9a5369a006f4da921fe62a035b2d, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d9ae9a5369a006f4da921fe62a035b2d, type: 3}
       propertyPath: m_TagString
@@ -11721,7 +11721,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3810470826394628741, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4587571167431092287, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_LocalPosition.x
@@ -11945,7 +11945,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3810470826394628741, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4587571167431092287, guid: 8a17b276e4bab4fdfb4fd22a9a2af255, type: 3}
       propertyPath: m_LocalPosition.x
@@ -12307,6 +12307,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyGround
       objectReference: {fileID: 0}
+    - target: {fileID: 8896180695729148078, guid: f2be8bb1ebd46477b8300e98183db77b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -12361,7 +12365,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1718688006383800966, guid: 393aae44b78684de19025e9e8c691005, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2058656364330960956, guid: 393aae44b78684de19025e9e8c691005, type: 3}
       propertyPath: m_LocalPosition.x
