@@ -7,7 +7,6 @@ public class DamageSphereParticle : MonoBehaviour
 
     void OnParticleTrigger()
     {
-        Debug.Log("Sparkle!");
         GameManager.DamageToPlayer(Damage);
     }
 }

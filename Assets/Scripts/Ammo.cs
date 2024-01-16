@@ -1,29 +1,45 @@
-using System;
 using UnityEngine;
-public abstract class Ammo : MonoBehaviour 
+
+public abstract class Ammo : MonoBehaviour
 {
-
-    public GameManager GameManager;
     public float Damage;
-    public float Radius = 0.0f;
-    public float RemoveDistance = 200.0f;
-    public GameObject player;
-    public Rigidbody body;
-    public ParticleSystem exp;
-    public bool alreadyDamaged = false;
+    public GameObject Player;
 
-    void Update()
+    protected Rigidbody body;
+    protected ParticleSystem exp;
+    protected bool alreadyDamaged = false;
+
+    public virtual void Awake()
     {
-        if (Vector3.Distance(transform.position, player.transform.position) > RemoveDistance)
+        Player = GameObject.FindGameObjectWithTag("Player");
+        body = GetComponent<Rigidbody>();
+        exp = GetComponent<ParticleSystem>();
+    }
+
+    public virtual void Update()
+    {
+        if (Vector3.Distance(transform.position, Player.transform.position) > 200.0f)
         {
             Destroy(gameObject);
         }
     }
 
-    void OnDestroy() {
+    public virtual void OnDestroy()
+    {
         exp.Stop();
     }
 
-    public abstract void OnCollisionEnter(Collision other);
+    public abstract void OnCollision(Collision other);
 
+    public virtual void OnCollisionEnter(Collision other)
+    {
+        if (!alreadyDamaged && !other.gameObject.CompareTag("Player") && !other.gameObject.CompareTag("Bullet"))
+        {
+            OnCollision(other);
+            exp.Play();
+            body.velocity = Vector3.zero;
+            alreadyDamaged = true;
+            Destroy(gameObject, exp.main.duration);
+        }
+    }
 }

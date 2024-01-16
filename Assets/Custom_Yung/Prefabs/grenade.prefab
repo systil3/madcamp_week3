@@ -5312,6 +5312,18 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -4535744059852909316, guid: 201b378f49baef040b9bbbd601948ce8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3690676483951470995, guid: 201b378f49baef040b9bbbd601948ce8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -998708227812776082, guid: 201b378f49baef040b9bbbd601948ce8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 201b378f49baef040b9bbbd601948ce8, type: 3}
       propertyPath: m_Icon
       value: 
@@ -5319,6 +5331,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 201b378f49baef040b9bbbd601948ce8, type: 3}
       propertyPath: m_Name
       value: grenade
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 201b378f49baef040b9bbbd601948ce8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5367,10 +5383,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 3
-  m_Height: 4
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: -1}
+  m_Radius: 2.5
+  m_Height: 10
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &9046927885238012122
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5410,14 +5426,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb54f833fc0261d4d8acad1355dc5efe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameManager: {fileID: 0}
   Damage: 30
+  Player: {fileID: 0}
   Radius: 6
-  RemoveDistance: 200
-  player: {fileID: 0}
-  body: {fileID: 0}
-  exp: {fileID: 6012812787217020332}
-  alreadyDamaged: 0
 --- !u!4 &4569149844097921367 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 201b378f49baef040b9bbbd601948ce8, type: 3}
@@ -5611,6 +5622,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Meteor hit
       objectReference: {fileID: 0}
+    - target: {fileID: 284093079645364393, guid: adca458cebac70e48930bf9f619795da, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 284164189362957355, guid: adca458cebac70e48930bf9f619795da, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -5623,10 +5638,5 @@ PrefabInstance:
 --- !u!4 &5882652127128551226 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 280688515545955421, guid: adca458cebac70e48930bf9f619795da, type: 3}
-  m_PrefabInstance: {fileID: 5928518621706093415}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &6012812787217020332 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 87707054469002955, guid: adca458cebac70e48930bf9f619795da, type: 3}
   m_PrefabInstance: {fileID: 5928518621706093415}
   m_PrefabAsset: {fileID: 0}

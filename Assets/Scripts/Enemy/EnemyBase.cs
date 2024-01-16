@@ -18,7 +18,6 @@ public abstract class EnemyBase : MonoBehaviour
     public float DamageDuration;
     public float DetectionRange;
     public float DetectionAngle;
-    public float MaxHeight = 20.0f;
     public float TimeToDormant = 5.0f;
     public Rigidbody Player;
 
@@ -101,7 +100,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     public virtual void LateUpdate()
     {
-        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, 0, MaxHeight), transform.position.z);
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, 0, Player.position.y + 15.0f), transform.position.z);
     }
 
     IEnumerator Roaming()

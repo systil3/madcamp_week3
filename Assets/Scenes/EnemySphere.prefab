@@ -255,7 +255,7 @@ MonoBehaviour:
   DamageDuration: 1
   DetectionRange: 80
   DetectionAngle: 160
-  MaxHeight: 20
+  TimeToDormant: 5
   Player: {fileID: 0}
   TimeBetweenShots: 8
   SphereLifeTime: 6
@@ -309,7 +309,7 @@ MonoBehaviour:
   rotationSpeed: 360
   slowdownDistance: 0.6
   pickNextWaypointDist: 2
-  endReachedDistance: 0.2
+  endReachedDistance: 30
   alwaysDrawGizmos: 0
   slowWhenNotFacingTarget: 1
   whenCloseToDestination: 0

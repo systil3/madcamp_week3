@@ -1314,7 +1314,7 @@ ParticleSystem:
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
     donutRadius: 0.2
-    m_Position: {x: 0, y: 0.5, z: 0}
+    m_Position: {x: 0, y: 1, z: 0}
     m_Rotation: {x: 90, y: 0, z: 0}
     m_Scale: {x: 1, y: 1, z: 1}
     placementMode: 0
@@ -5481,7 +5481,7 @@ MonoBehaviour:
   DamageDuration: 1
   DetectionRange: 50
   DetectionAngle: 120
-  MaxHeight: 20
+  TimeToDormant: 5
   Player: {fileID: 0}
   ParticleForce: 10
 --- !u!199 &4124300639072900528
@@ -5595,7 +5595,7 @@ MonoBehaviour:
   rotationSpeed: 360
   slowdownDistance: 0.6
   pickNextWaypointDist: 2
-  endReachedDistance: 0.2
+  endReachedDistance: 10
   alwaysDrawGizmos: 0
   slowWhenNotFacingTarget: 1
   whenCloseToDestination: 0

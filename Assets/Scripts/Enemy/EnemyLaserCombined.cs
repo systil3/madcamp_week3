@@ -21,10 +21,8 @@ public class EnemyLaserCombined : EnemyLaserBase
         switch (laserType)
         {
             case LaserType.Line:
-                print("line");
                 return MakeLaserLine();
             case LaserType.Circle:
-                print("circle");
                 return MakeLaserCircle();
             default:
                 throw new System.Exception("unknown type of firing laser");

@@ -39,7 +39,6 @@ public class SurfaceParticles : MonoBehaviour
 
                 // 파티클 생성
                 particleSystemInstance.Emit(1);
-                print("emit");
             }
         }
         else
