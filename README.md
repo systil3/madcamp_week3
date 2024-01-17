@@ -23,7 +23,9 @@
 - 권총 : 대미지 20, 발사 속도 빠름
 - 자동화기 : 대미지 5, 연사 가능, 발사 속도 빠름
 - 유탄 발사기 : 데미지 50 + a(스플래시 대미지), 발사 속도 느림
-- 산탄총 : 대미지 7 * 8, 발사 속도 느림
+- 산탄총 : 대미지 8 * 8, 발사 속도 느림
+- 
+![enemies](https://github.com/systil3/madcamp_week3/assets/87977576/2fc92dfc-60a2-418d-8429-311850abccc7)
 
 - 적들의 경우 노란색, 파란색, 검은색의 3가지 종류가 존재합니다.
     ![yellow](https://github.com/systil3/madcamp_week3/assets/115442017/044b2713-f15f-4f70-a54b-439edbef06c5)
