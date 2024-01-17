@@ -67,9 +67,6 @@ public abstract class EnemyLaserBase : EnemyBase
 
         // AudioSource 컴포넌트 초기화
         audioSource = GetComponent<AudioSource>();
-#if UNITY_EDITOR
-        EnemyLaserShotSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Custom_Yung/EnemyLaserShot.wav");
-#endif
     }
 
     public abstract RaycastHit MakeLaser();

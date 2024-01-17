@@ -3,10 +3,12 @@ using UnityEngine;
 public abstract class Ammo : MonoBehaviour
 {
     public float Damage;
+    public AudioClip GunShotSound;
     public GameObject Player;
 
     protected Rigidbody body;
     protected ParticleSystem exp;
+    protected AudioSource audioSource;
     protected bool alreadyDamaged = false;
 
     public virtual void Awake()
@@ -14,6 +16,8 @@ public abstract class Ammo : MonoBehaviour
         Player = GameObject.FindGameObjectWithTag("Player");
         body = GetComponent<Rigidbody>();
         exp = GetComponent<ParticleSystem>();
+        audioSource = GetComponent<AudioSource>();
+        audioSource.PlayOneShot(GunShotSound);
     }
 
     public virtual void Update()

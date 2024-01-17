@@ -5183,7 +5183,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 47f35365f3532084e828e4cc5c79b5d6, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 0.578
   m_Pitch: 1
@@ -5308,7 +5308,7 @@ MonoBehaviour:
   OuterLaserTileAmount: 1
   LaserYBeamMaterial: {fileID: 0}
   MaxRayLength: 200
-  EnemyLaserShotSound: {fileID: 0}
+  EnemyLaserShotSound: {fileID: 8300000, guid: 47f35365f3532084e828e4cc5c79b5d6, type: 3}
   LaserAngularSpeed: 3
   LaserPlaneRadius: 15
   LaserAngle: 0

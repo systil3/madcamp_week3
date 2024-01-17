@@ -4,6 +4,7 @@ using UnityEngine;
 public class Grenade : Ammo
 {
     public float Radius = 6.0f;
+    public AudioClip ExplosionSound;
 
     public override void Awake()
     {
@@ -23,6 +24,7 @@ public class Grenade : Ammo
             enemy.TakeDamage((float)Math.Round((decimal)(Radius - distance) / (decimal)Radius * (decimal)Damage, 1));
         }
 
+        audioSource.PlayOneShot(ExplosionSound);
         transform.Find("Trace").GetComponent<ParticleSystem>().Stop();
         transform.Find("Circle.012").GetComponent<Renderer>().enabled = false;
     }

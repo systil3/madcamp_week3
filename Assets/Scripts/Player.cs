@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +11,6 @@ public class Player : MonoBehaviour
     // 총 관련
     public GunType CurrentGunType = GunType.Pistol;
     public List<Gun> Guns;
-    public AudioClip GunshotSound;
     float shootDelay = 0;
 
     // 이동 관련
@@ -29,7 +27,6 @@ public class Player : MonoBehaviour
     public GameObject Bullet;
     public GameObject Grenade;
     public GameObject Pellet;
-    GameObject bulletObject;
 
     // 반동 관련
     Vector3 originalPosition;
@@ -43,20 +40,14 @@ public class Player : MonoBehaviour
     Rigidbody body;
     Transform armTransform;
     Vector3 armOffset;
-    AudioSource audioSource;
 
     void Awake()
     {
         CameraOffset = Camera.main.transform.localPosition;
         body = GetComponent<Rigidbody>();
-        audioSource = GetComponent<AudioSource>();
         armTransform = transform.Find("Arm");
         armOffset = armTransform.localPosition;
         initialSpeed = Speed;
-
-#if UNITY_EDITOR
-        GunshotSound = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Custom_Yung/PistolShot1.wav");
-#endif
     }
 
     void Update()
@@ -99,7 +90,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            cameraTick = UnityEngine.Random.Range(0f, 1000f);
+            cameraTick = Random.Range(0f, 1000f);
             Camera.main.transform.localPosition = CameraOffset;
         }
     }
@@ -198,6 +189,8 @@ public class Player : MonoBehaviour
 
             if (shootDelay > currentGun.ShootDelay)
             {
+                GameObject bulletObject;
+
                 switch (CurrentGunType)
                 {
                     case GunType.Pistol:
@@ -220,33 +213,11 @@ public class Player : MonoBehaviour
                 Vector3 up = TransformDirectionRelativeToPlayer(Vector3.up);
                 Vector3 position = transform.position + (forward + up) * 0.8f;
 
-                bulletObject.GetComponent<Ammo>().Damage = currentGun.Damage;
+                Ammo ammo = bulletObject.GetComponent<Ammo>();
+                ammo.Damage = currentGun.Damage;
+                ammo.GunShotSound = currentGun.GunShotSound;
 
-                if (CurrentGunType == GunType.Pistol || CurrentGunType == GunType.Rapid)
-                {
-                    GameObject bulletInstance = Instantiate(bulletObject, position, transform.rotation);
-                    Rigidbody bulletRigidbody = bulletInstance.GetComponent<Rigidbody>();
-                    bulletRigidbody.AddForce(forward * currentGun.Force, ForceMode.Impulse);
-
-                    // 발사 소리 재생
-                    if (GunshotSound != null)
-                    {
-                        audioSource.PlayOneShot(GunshotSound);
-                    }
-                }
-                else if (CurrentGunType == GunType.Grenade)
-                {
-                    GameObject bulletInstance = Instantiate(bulletObject, position, transform.rotation);
-                    Rigidbody bulletRigidbody = bulletInstance.GetComponent<Rigidbody>();
-                    bulletRigidbody.AddForce(forward * currentGun.Force, ForceMode.Impulse);
-
-                    // 발사 소리 재생
-                    if (GunshotSound != null)
-                    {
-                        audioSource.PlayOneShot(GunshotSound);
-                    }
-                }
-                else if (CurrentGunType == GunType.Shotgun)
+                if (CurrentGunType == GunType.Shotgun)
                 {
                     int numberOfPellets = 8;
 
@@ -254,24 +225,21 @@ public class Player : MonoBehaviour
                     {
                         // 단위원을 각도 기준 n분할하여 펠릿 배치
                         float angle = 2 * Mathf.PI / numberOfPellets * i;
-
-                        Vector3 pelletDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
-                        Vector3 pelletForward = TransformDirectionRelativeToPlayer(pelletDirection);
-
-                        GameObject bulletInstance = Instantiate(bulletObject, position + pelletForward * 0.01f, transform.rotation);
+                        Vector3 pelletDirection = TransformDirectionRelativeToPlayer(new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0));
+                        GameObject bulletInstance = Instantiate(bulletObject, position, transform.rotation);
                         Rigidbody bulletRigidbody = bulletInstance.GetComponent<Rigidbody>();
 
-                        bulletRigidbody.AddForce((pelletForward + forward * 5) * currentGun.Force, ForceMode.Impulse);
+                        bulletRigidbody.AddForce((pelletDirection + forward * 5) * currentGun.Force, ForceMode.Impulse);
 
                         // 데미지를 펠릿 수로 나눔
                         bulletInstance.GetComponent<Pellet>().Damage /= numberOfPellets;
                     }
-
-                    // 발사 소리 재생
-                    if (GunshotSound != null)
-                    {
-                        audioSource.PlayOneShot(GunshotSound);
-                    }
+                }
+                else
+                {
+                    GameObject bulletInstance = Instantiate(bulletObject, position, transform.rotation);
+                    Rigidbody bulletRigidbody = bulletInstance.GetComponent<Rigidbody>();
+                    bulletRigidbody.AddForce(forward * currentGun.Force, ForceMode.Impulse);
                 }
 
                 StartCoroutine(RecoilCoroutine(currentGun.RecoilForce, currentGun.RecoilDuration));
@@ -282,31 +250,16 @@ public class Player : MonoBehaviour
         shootDelay += Time.deltaTime;
     }
 
-    GameObject GunTypeToObject(GunType gunType)
-    {
-        switch (gunType)
-        {
-            case GunType.Pistol:
-                return armTransform.Find("Pistol").gameObject;
-            case GunType.Rapid:
-                return armTransform.Find("SMG").gameObject;
-            case GunType.Grenade:
-                return armTransform.Find("Grenade").gameObject;
-            case GunType.Shotgun:
-                return armTransform.Find("Shotgun").gameObject;
-            default:
-                throw new System.Exception("invalid gun type");
-        }
-    }
-
     IEnumerator ChangeGunCoroutine(GunType gunType)
     {
         IsFreeze = true;
         armTransform.Rotate(90, -90, 0);
         yield return new WaitForSeconds(0.1f);
 
-        GunTypeToObject(CurrentGunType).SetActive(false);
-        GunTypeToObject(gunType).SetActive(true);
+        Gun.GunTypeToObject(armTransform, CurrentGunType).SetActive(false);
+        Gun.GunTypeToObject(armTransform, gunType).SetActive(true);
+        Gun.GetCrossHairObject(CurrentGunType).SetActive(false);
+        Gun.GetCrossHairObject(gunType).SetActive(true);
 
         armTransform.Rotate(0, 90, -90);
         CurrentGunType = gunType;
@@ -319,7 +272,7 @@ public class Player : MonoBehaviour
 
         float halfDuration = duration / 2;
         float elapsed = 0f;
-        float tick = UnityEngine.Random.Range(0f, 500f);
+        float tick = Random.Range(0f, 500f);
 
         while (elapsed < duration)
         {

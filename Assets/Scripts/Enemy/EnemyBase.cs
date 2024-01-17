@@ -100,7 +100,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     public virtual void LateUpdate()
     {
-        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, 0, Player.position.y + 15.0f), transform.position.z);
+        //transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, 0, Player.position.y + 15.0f), transform.position.z);
     }
 
     IEnumerator Roaming()
