@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine.UI;
 
 [Serializable]
@@ -8,7 +9,7 @@ public class Health
     public float MaxHealth;
     public float CurrentHealth;
     public Slider HealthSlider;
-    public Text HealthText;
+    public TextMeshProUGUI HealthText;
 
     public void Update()
     {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -11,12 +12,12 @@ public class GameManager : MonoBehaviour
 {
     public ScriptableRendererFeature RendererFeature;
 
-    public Text AlertText;
+    public TextMeshProUGUI AlertText;
     public Health PlayerHealth;
     public List<EnemyBase> Enemies;
 
     public Slider EnemyHealthSlider;
-    public Text EnemyHealthText;
+    public TextMeshProUGUI EnemyHealthText;
 
     int enemyHealthIndex = 0;
 

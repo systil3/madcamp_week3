@@ -23,9 +23,18 @@ public class Enemy : EnemyBase
         mainModule.simulationSpace = ParticleSystemSimulationSpace.World;
     }
 
-    public override void OnCombat(float distanceToPlayer) { }
+    public override void OnCombat(float distanceToPlayer)
+    {
+        if (ps.isStopped)
+        {
+            ps.Play();
+        }
+    }
 
-    public override void OnDormant() { }
+    public override void OnDormant()
+    {
+        ps.Stop();
+    }
 
     public override void Die()
     {
