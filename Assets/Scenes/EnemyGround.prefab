@@ -694,7 +694,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 1
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -5483,8 +5483,16 @@ MonoBehaviour:
   DetectionAngle: 120
   TimeToDormant: 5
   Player: {fileID: 0}
-  DieEffectObject: {fileID: 2531418358388114873, guid: 4c476c227e8be7f469046f3e2f06bb96, type: 3}
-  ParticleForce: 10
+  BulletWeak: {fileID: 1195850100719571737, guid: 3562bc6b73179c142a260fab04d27a36, type: 3}
+  BulletStrong: {fileID: 5525043106579681345, guid: b9169d492a609ef41bf8a1d594afa940, type: 3}
+  MuzzleTransform: {fileID: 3138526729762879438}
+  TimeBetweenPatterns: 5
+  TimeBetweenShots: 0.3
+  NumberOfShots: 10
+  BulletLifeTime: 5
+  elapsedTime: 100
+  bulletForce: 50
+  numberOfBullets: 8
 --- !u!199 &4124300639072900528
 ParticleSystemRenderer:
   serializedVersion: 6

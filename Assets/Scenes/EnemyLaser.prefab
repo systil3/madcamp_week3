@@ -5112,7 +5112,7 @@ Transform:
   m_GameObject: {fileID: 3810470826394628741}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 32.3, y: 15, z: 10.98}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5183,7 +5183,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 47f35365f3532084e828e4cc5c79b5d6, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.578
   m_Pitch: 1
@@ -5293,7 +5293,6 @@ MonoBehaviour:
   DetectionAngle: 180
   TimeToDormant: 5
   Player: {fileID: 0}
-  DieEffectObject: {fileID: 2531418358388114873, guid: 4c476c227e8be7f469046f3e2f06bb96, type: 3}
   LaserPeriod: 2
   LaserAimingDelay: 1
   LaserFiringTime: 0.5
@@ -5309,7 +5308,7 @@ MonoBehaviour:
   OuterLaserTileAmount: 1
   LaserYBeamMaterial: {fileID: 0}
   MaxRayLength: 200
-  EnemyLaserShotSound: {fileID: 8300000, guid: 47f35365f3532084e828e4cc5c79b5d6, type: 3}
+  EnemyLaserShotSound: {fileID: 0}
   LaserAngularSpeed: 3
   LaserPlaneRadius: 15
   LaserAngle: 0

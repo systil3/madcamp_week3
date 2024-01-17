@@ -62,15 +62,15 @@ public class EnemyGround : EnemyBase
                     float bulletRandomValue = UnityEngine.Random.Range(0f, 1f);
                     GameObject bullet;
 
-                    if (bulletRandomValue < 1 / 5f)
+                    if (bulletRandomValue > 0.2f)
                     {
                         print(BulletWeak);
-                        bullet = Instantiate(BulletWeak, MuzzleTransform.position, transform.rotation);
+                        bullet = Instantiate(BulletWeak, MuzzleTransform.position + Vector3.up * 0.5f, transform.rotation);
                     }
                     else
                     {
                         print(BulletStrong);
-                        bullet = Instantiate(BulletStrong, MuzzleTransform.position, transform.rotation);
+                        bullet = Instantiate(BulletStrong, MuzzleTransform.position + Vector3.up * 0.5f, transform.rotation);
                     }
 
                     bullet.transform.RotateAround(bullet.transform.position, Vector3.up, angle);
@@ -95,7 +95,9 @@ public class EnemyGround : EnemyBase
         }
     }
 
-    public override void OnDormant() { }
+    public override void OnDormant() { 
+
+    }
 
     // 파티클이 트리거에 들어갈 때 호출되는 함수
     private void OnParticleCollision(GameObject other)

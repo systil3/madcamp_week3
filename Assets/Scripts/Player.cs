@@ -263,6 +263,9 @@ public class Player : MonoBehaviour
         armTransform.Rotate(0, 90, -90);
         CurrentGunType = gunType;
         IsFreeze = false;
+        
+        //무기 바꿔가면서 딜레이 없애고 쏠 수 있게
+        shootDelay = 10000;
     }
 
     IEnumerator RecoilCoroutine(float force, float duration)
