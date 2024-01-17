@@ -228,7 +228,7 @@ public class Player : MonoBehaviour
                         GameObject bulletInstance = Instantiate(bulletObject, position, transform.rotation);
                         Rigidbody bulletRigidbody = bulletInstance.GetComponent<Rigidbody>();
 
-                        bulletRigidbody.AddForce((pelletDirection + forward * 5) * currentGun.Force, ForceMode.Impulse);
+                        bulletRigidbody.AddForce((pelletDirection + forward * 6).normalized * currentGun.Force, ForceMode.Impulse);
 
                         // 데미지를 펠릿 수로 나눔
                         bulletInstance.GetComponent<Pellet>().Damage /= numberOfPellets;
