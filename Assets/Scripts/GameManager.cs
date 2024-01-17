@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,29 +12,23 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public ScriptableRendererFeature RendererFeature;
-
+    public Canvas LiveCanvas;
+    public Canvas StatisticsCanvas;
     public TextMeshProUGUI AlertText;
     public Health PlayerHealth;
-    public List<EnemyBase> Enemies;
-
     public Slider EnemyHealthSlider;
     public TextMeshProUGUI EnemyHealthText;
+    public TextMeshProUGUI StatisticsText;
+    public int NumHit = 0, NumShot = 0;
 
+    List<EnemyBase> enemies;
     int enemyHealthIndex = 0;
+    float damage = 0.0f;
 
     void Awake()
     {
         // Enemy 태그를 가진 모든 객체들을 찾아서 리스트에 추가
-        GameObject[] enemyObjects = GameObject.FindGameObjectsWithTag("Enemy");
-
-        foreach (GameObject enemyObject in enemyObjects)
-        {
-            EnemyBase enemy = enemyObject.GetComponent<EnemyBase>();
-            if (enemy != null)
-            {
-                Enemies.Add(enemy);
-            }
-        }
+        enemies = GameObject.FindGameObjectsWithTag("Enemy").Select(e => e.GetComponent<EnemyBase>()).ToList();
 
         //마우스 포인터 잠금 및 숨김
         Cursor.lockState = CursorLockMode.Locked;
@@ -54,9 +49,9 @@ public class GameManager : MonoBehaviour
 
         if (enemyHealthIndex >= 0)
         {
-            for (int i = 0; i < Enemies.Count; i++)
+            for (int i = 0; i < enemies.Count; i++)
             {
-                Health health = Enemies[i].Health;
+                Health health = enemies[i].Health;
 
                 if (i == enemyHealthIndex)
                 {
@@ -71,7 +66,7 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            Enemies[enemyHealthIndex].Health.Update();
+            enemies[enemyHealthIndex].Health.Update();
         }
     }
 
@@ -80,10 +75,10 @@ public class GameManager : MonoBehaviour
         int minIndex = -1;
         float minDistance = float.MaxValue;
 
-        for (int i = 0; i < Enemies.Count; i++)
+        for (int i = 0; i < enemies.Count; i++)
         {
-            if (Enemies[i].IsDestroyed()) continue;
-            float distance = Vector3.Distance(Enemies[i].GetComponent<Transform>().position, player.position);
+            if (enemies[i].IsDestroyed()) continue;
+            float distance = Vector3.Distance(enemies[i].GetComponent<Transform>().position, player.position);
             if (distance < minDistance)
             {
                 minIndex = i;
@@ -101,7 +96,7 @@ public class GameManager : MonoBehaviour
 
     public void SetEnemyHealth(int index, float maxHealth)
     {
-        Enemies[index].Health.SetMaxHealth(maxHealth);
+        enemies[index].Health.SetMaxHealth(maxHealth);
     }
 
     void PlayerDead()
@@ -109,24 +104,30 @@ public class GameManager : MonoBehaviour
         StartCoroutine(PlayerDeadCoroutine());
     }
 
-    void EnemyDead(Health health)
+    void EnemyDead()
     {
-        if (Enemies.Count(e => !e.Health.IsDead) == 0)
+        if (enemies.Count(e => !e.Health.IsDead) == 0)
         {
-            AlertText.text = "You cleared!";
+            StartCoroutine(ClearCoroutine());
         }
         else
         {
             AlertText.text = "You killed!";
+            StartCoroutine(ClearAlertCoroutine(2.0f));
         }
-
-        StartCoroutine(ClearAlertCoroutine(2.0f));
     }
 
     IEnumerator ClearAlertCoroutine(float seconds)
     {
         yield return new WaitForSeconds(seconds);
         AlertText.text = "";
+    }
+
+    IEnumerator ClearCoroutine()
+    {
+        AlertText.text = "You cleared!";
+        yield return new WaitForSeconds(4.0f);
+        ShowStatistics();
     }
 
     IEnumerator PlayerDeadCoroutine()
@@ -137,15 +138,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(1.0f);
         }
 
-        AlertText.text = "";
-        SetPlayerHealth(PlayerHealth.MaxHealth);
-
-        for (int i = 0; i < Enemies.Count; i++)
-        {
-            SetEnemyHealth(i, Enemies[i].Health.MaxHealth);
-        }
-
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        ShowStatistics();
     }
 
     IEnumerator DamageScreenCoroutine()
@@ -153,6 +146,32 @@ public class GameManager : MonoBehaviour
         RendererFeature.SetActive(true);
         yield return new WaitForSeconds(0.3f);
         RendererFeature.SetActive(false);
+    }
+
+    void ShowStatistics()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        int kill = enemies.Count(e => e.Health.IsDead);
+        LiveCanvas.gameObject.SetActive(false);
+        StatisticsText.text = $"Kill: {kill}\n\nDamage: {damage}\n\nHit Rate: {NumHit} / {NumShot} ({Math.Round(NumHit / (decimal)NumShot * 100, 1)}%)";
+        StatisticsCanvas.gameObject.SetActive(true);
+    }
+
+    public void Restart()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        AlertText.text = "";
+        SetPlayerHealth(PlayerHealth.MaxHealth);
+
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            SetEnemyHealth(i, enemies[i].Health.MaxHealth);
+        }
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public bool DamageToPlayer(float damage)
@@ -173,10 +192,11 @@ public class GameManager : MonoBehaviour
     {
         if (health.IsDead) return true;
         health.Damage(damage);
+        this.damage += damage;
 
         if (health.IsDead)
         {
-            EnemyDead(health);
+            EnemyDead();
         }
         else
         {

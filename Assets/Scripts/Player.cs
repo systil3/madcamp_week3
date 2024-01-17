@@ -212,6 +212,7 @@ public class Player : MonoBehaviour
                 Vector3 position = transform.position + TransformDirectionRelativeToPlayer(CameraOffset) + forward * 0.8f + up * 0.2f;
 
                 Ammo ammo = bulletObject.GetComponent<Ammo>();
+                ammo.GameManager = GameManager;
                 ammo.Damage = currentGun.Damage;
                 ammo.GunShotSound = currentGun.GunShotSound;
 

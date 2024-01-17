@@ -8,6 +8,7 @@ public class Bullet : Ammo
         {
             EnemyBase enemy = other.gameObject.GetComponent<EnemyBase>();
             enemy.TakeDamage(Damage);
+            GameManager.NumHit++;
         }
 
         transform.Find("default").GetComponent<Renderer>().enabled = false;

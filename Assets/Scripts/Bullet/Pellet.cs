@@ -8,6 +8,7 @@ public class Pellet : Ammo
         {
             EnemyBase enemy = other.gameObject.GetComponent<EnemyBase>();
             enemy.TakeDamage(Damage);
+            GameManager.NumHit++;
         }
     }
 }

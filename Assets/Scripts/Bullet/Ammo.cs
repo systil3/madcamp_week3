@@ -2,6 +2,7 @@ using UnityEngine;
 
 public abstract class Ammo : MonoBehaviour
 {
+    public GameManager GameManager;
     public float Damage;
     public AudioClip GunShotSound;
     public GameObject Player;
@@ -40,6 +41,7 @@ public abstract class Ammo : MonoBehaviour
         if (!alreadyDamaged && !other.gameObject.CompareTag("Player") && !other.gameObject.CompareTag("PlayerBullet"))
         {
             OnCollision(other);
+            GameManager.NumShot++;
             exp.Play();
             body.velocity = Vector3.zero;
             alreadyDamaged = true;

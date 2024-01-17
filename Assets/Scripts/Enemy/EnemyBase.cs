@@ -98,7 +98,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     public virtual void OnDestroy()
     {
-        dieEffect.Stop();
+        dieEffect?.Stop();
     }
 
     IEnumerator Roaming()

@@ -24,6 +24,11 @@ public class Grenade : Ammo
             enemy.TakeDamage((float)Math.Round((decimal)(Radius - distance) / (decimal)Radius * (decimal)Damage, 1));
         }
 
+        if (colliders.Length > 0)
+        {
+            GameManager.NumHit++;
+        }
+
         audioSource.PlayOneShot(ExplosionSound);
         transform.Find("Trace").GetComponent<ParticleSystem>().Stop();
         transform.Find("Circle.012").GetComponent<Renderer>().enabled = false;
