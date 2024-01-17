@@ -133,6 +133,7 @@ public abstract class EnemyLaserBase : EnemyBase
     public override void Die()
     {
         OnDormant();
+        base.Die();
     }
 
     IEnumerator Shake(Player player)

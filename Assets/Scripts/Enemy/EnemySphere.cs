@@ -122,7 +122,7 @@ public class EnemySphere : EnemyBase
     public override void Die()
     {
         projectiles.ForEach(Destroy);
-        Destroy(gameObject, 3f);
+        base.Die();
     }
 
     void ShootProjectile()

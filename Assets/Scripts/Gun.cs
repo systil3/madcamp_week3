@@ -4,7 +4,7 @@ using UnityEngine;
 public enum GunType
 {
     Pistol,
-    Rapid,
+    SMG,
     Grenade,
     Shotgun,
 }
@@ -26,7 +26,7 @@ public class Gun
         {
             case GunType.Pistol:
                 return armTransform.Find("Pistol").gameObject;
-            case GunType.Rapid:
+            case GunType.SMG:
                 return armTransform.Find("SMG").gameObject;
             case GunType.Grenade:
                 return armTransform.Find("Grenade").gameObject;
@@ -42,7 +42,7 @@ public class Gun
         switch (gunType)
         {
             case GunType.Pistol:
-            case GunType.Rapid:
+            case GunType.SMG:
                 return Camera.main.transform.GetChild(0).GetChild(0).gameObject;
             case GunType.Grenade:
                 return Camera.main.transform.GetChild(0).GetChild(1).gameObject;

@@ -20,6 +20,7 @@ public abstract class EnemyBase : MonoBehaviour
     public float DetectionAngle;
     public float TimeToDormant = 5.0f;
     public Rigidbody Player;
+    public ParticleSystem DieEffectObject;
 
     protected float distanceToPlayer;
     protected float angleToPlayer;
@@ -30,6 +31,7 @@ public abstract class EnemyBase : MonoBehaviour
 
     bool isTrackingByDamage = false;
     float elapsedToDormant = 0.0f;
+    ParticleSystem dieEffect;
 
     public virtual void Awake()
     {
@@ -63,15 +65,6 @@ public abstract class EnemyBase : MonoBehaviour
                 {
                     isTrackingByDamage = false;
                 }
-                /*
-                Vector2 forward = new Vector2(transform.position.z, transform.position.x);
-                Vector2 steeringTarget = new Vector2(navMeshAgent.steeringTarget.z, navMeshAgent.steeringTarget.x);
-                Vector2 dir = steeringTarget - forward;
-                float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-                transform.eulerAngles = Vector3.up * angle;
-                */
-                //Vector3 newDirection = Vector3.RotateTowards(transform.forward, Player.position - transform.position, aiPath.rotationSpeed * Time.deltaTime, 0.0f);
-                //transform.rotation = Quaternion.LookRotation(newDirection);
 
                 OnCombat(distanceToPlayer);
 
@@ -101,6 +94,11 @@ public abstract class EnemyBase : MonoBehaviour
     public virtual void LateUpdate()
     {
         //transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, 0, Player.position.y + 15.0f), transform.position.z);
+    }
+
+    public virtual void OnDestroy()
+    {
+        dieEffect.Stop();
     }
 
     IEnumerator Roaming()
@@ -139,5 +137,17 @@ public abstract class EnemyBase : MonoBehaviour
         }
     }
 
-    public abstract void Die();
+    public virtual void Die()
+    {
+        dieEffect = Instantiate(DieEffectObject, transform.position, transform.rotation);
+        dieEffect.Play();
+
+        Renderer[] renderers = transform.GetComponentsInChildren<Renderer>();
+        foreach (Renderer renderer in renderers)
+        {
+            renderer.enabled = false;
+        }
+
+        Destroy(gameObject, dieEffect.main.duration);
+    }
 }

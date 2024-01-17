@@ -257,6 +257,7 @@ MonoBehaviour:
   DetectionAngle: 160
   TimeToDormant: 5
   Player: {fileID: 0}
+  DieEffectObject: {fileID: 2531418358388114873, guid: 4c476c227e8be7f469046f3e2f06bb96, type: 3}
   TimeBetweenShots: 8
   SphereLifeTime: 6
   DamageSphere: {fileID: 7646171001576665472, guid: 501f1bc2b915047369c591e8be37522b, type: 3}

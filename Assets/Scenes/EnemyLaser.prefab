@@ -5112,7 +5112,7 @@ Transform:
   m_GameObject: {fileID: 3810470826394628741}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 32.3, y: 15, z: 10.98}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5293,6 +5293,7 @@ MonoBehaviour:
   DetectionAngle: 180
   TimeToDormant: 5
   Player: {fileID: 0}
+  DieEffectObject: {fileID: 2531418358388114873, guid: 4c476c227e8be7f469046f3e2f06bb96, type: 3}
   LaserPeriod: 2
   LaserAimingDelay: 1
   LaserFiringTime: 0.5

@@ -40,7 +40,7 @@ public class Enemy : EnemyBase
     {
         ps.Stop();
         ps.Clear();
-        Destroy(gameObject, 3f);
+        base.Die();
     }
 
     void OnParticleTrigger()

@@ -84,16 +84,11 @@ public class EnemyLaserCombined : EnemyLaserBase
 
     public override void OnDormant()
     {
-        base.OnDormant();
-
         //다음에 쏠 타입 정하기 : 2/3의 확률로 직선, 1/3의 확률로 원형
         float laserRandomValue = Random.Range(0f, 1f);
         laserType = laserRandomValue < 0.33f ? LaserType.Circle : LaserType.Line;
         LaserFiringTime = laserType == LaserType.Circle ? 2f : 0.5f;
-    }
 
-    public override void Die()
-    {
-        Destroy(gameObject, 3f);
+        base.OnDormant();
     }
 }

@@ -170,9 +170,9 @@ public class Player : MonoBehaviour
         {
             StartCoroutine(ChangeGunCoroutine(GunType.Pistol));
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2) && CurrentGunType != GunType.Rapid)
+        else if (Input.GetKeyDown(KeyCode.Alpha2) && CurrentGunType != GunType.SMG)
         {
-            StartCoroutine(ChangeGunCoroutine(GunType.Rapid));
+            StartCoroutine(ChangeGunCoroutine(GunType.SMG));
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3) && CurrentGunType != GunType.Grenade)
         {
@@ -183,7 +183,7 @@ public class Player : MonoBehaviour
             StartCoroutine(ChangeGunCoroutine(GunType.Shotgun));
         }
 
-        if ((CurrentGunType != GunType.Rapid && Input.GetButtonDown("Fire1")) || (CurrentGunType == GunType.Rapid && Input.GetButton("Fire1")))
+        if ((CurrentGunType != GunType.SMG && Input.GetButtonDown("Fire1")) || (CurrentGunType == GunType.SMG && Input.GetButton("Fire1")))
         {
             Gun currentGun = Guns.FirstOrDefault(e => e.Type == CurrentGunType);
 
@@ -194,9 +194,7 @@ public class Player : MonoBehaviour
                 switch (CurrentGunType)
                 {
                     case GunType.Pistol:
-                        bulletObject = Bullet;
-                        break;
-                    case GunType.Rapid:
+                    case GunType.SMG:
                         bulletObject = Bullet;
                         break;
                     case GunType.Grenade:
@@ -211,7 +209,7 @@ public class Player : MonoBehaviour
 
                 Vector3 forward = TransformDirectionRelativeToPlayer(Vector3.forward);
                 Vector3 up = TransformDirectionRelativeToPlayer(Vector3.up);
-                Vector3 position = transform.position + (forward + up) * 0.8f;
+                Vector3 position = transform.position + TransformDirectionRelativeToPlayer(CameraOffset) + forward * 0.8f + up * 0.2f;
 
                 Ammo ammo = bulletObject.GetComponent<Ammo>();
                 ammo.Damage = currentGun.Damage;

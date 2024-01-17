@@ -26,10 +26,4 @@ public class EnemyLaser : EnemyLaserBase
         LaserLine.SetPosition(1, hitPosition);
         return hit;
     }
-
-    public override void Die()
-    {
-        base.Die();
-        Destroy(gameObject, 3f);
-    }
 }
