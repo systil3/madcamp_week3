@@ -10,5 +10,7 @@ public class Pellet : Ammo
             enemy.TakeDamage(Damage);
             GameManager.NumHit++;
         }
+
+        //transform.Find("trace").GetComponent<Renderer>().enabled = false;
     }
 }

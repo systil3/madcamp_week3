@@ -15,6 +15,9 @@ public abstract class EnemyLaserBase : EnemyBase
     //레이저 파티클
     public ParticleSystem LaserFireSignParticleSystem;
     public ParticleSystem.EmissionModule LaserFireSignEmissionModule;
+
+    public ParticleSystem LaserFireSign2ParticleSystem;
+    public ParticleSystem.EmissionModule LaserFireSign2EmissionModule;
     public ParticleSystem LaserFireParticleSystem;
     public Transform LaserFireParticleTransform;
     public ParticleSystem.EmissionModule LaserFireEmissionModule;
@@ -37,6 +40,8 @@ public abstract class EnemyLaserBase : EnemyBase
     protected Vector3 laserStartPoint = Vector3.zero;
     protected Vector3 laserEndPoint = Vector3.zero;
 
+    protected LaserType laserType;
+
     //레이캐스트 관련
     public float MaxRayLength = 200f;
     protected Vector3 hitPosition;
@@ -49,8 +54,12 @@ public abstract class EnemyLaserBase : EnemyBase
         base.Awake();
         // 파티클 시스템 컴포넌트 가져오기
         LaserFireSignParticleSystem = transform.Find("LaserSignParticle").GetComponent<ParticleSystem>();
+
         LaserFireSignEmissionModule = LaserFireSignParticleSystem.emission;
         LaserFireSignEmissionModule.enabled = true;
+        LaserFireSign2EmissionModule = LaserFireSign2ParticleSystem.emission;
+        LaserFireSign2EmissionModule.enabled = true;
+
         LaserFireParticleTransform = transform.Find("LaserParticle");
         LaserFireParticleSystem = LaserFireParticleTransform.GetComponent<ParticleSystem>();
         LaserFireEmissionModule = LaserFireParticleSystem.emission;
@@ -75,7 +84,16 @@ public abstract class EnemyLaserBase : EnemyBase
     {
         if (LaserTime > LaserPeriod + LaserFiringTime)
         {
-            OnDormant();
+            //OnDormant();
+            //다음에 쏠 타입 정하기 : 2/3의 확률로 직선, 1/3의 확률로 원형
+            float laserRandomValue = Random.Range(0f, 1f);
+            laserType = laserRandomValue < 0.33f ? LaserType.Circle : LaserType.Line;
+            LaserFiringTime = laserType == LaserType.Circle ? 2f : 0.5f;
+            // 발사 종료
+            LaserTime = 0;
+            isFiringLaser = false;
+            LaserLine.enabled = false;
+            LaserFireEmissionModule.enabled = false;
         }
 
         if (LaserTime > LaserPeriod)
@@ -88,9 +106,13 @@ public abstract class EnemyLaserBase : EnemyBase
                 laserStartPoint = transform.position + new Vector3(-2, 2, 0);
                 isFiringLaser = true;
                 LaserLine.enabled = true;
-                LaserLine.startColor = new Color(1f, 0, 0);
-                LaserLine.endColor = new Color(0.5f, 0, 0);
-                LaserFireSignEmissionModule.enabled = false;
+                LaserLine.startColor = laserType == LaserType.Line? new Color(1f, 0, 0) : new Color(1f, 0, 1f);
+                LaserLine.endColor = laserType == LaserType.Line? new Color(0.5f, 0, 0) : new Color(0.5f, 0, 0.5f);
+                if(laserType == LaserType.Line) {
+                    LaserFireSignEmissionModule.enabled = false;
+                } else {
+                    LaserFireSign2EmissionModule.enabled = false;
+                }
             }
 
             RaycastHit hit = MakeLaser();
@@ -112,7 +134,11 @@ public abstract class EnemyLaserBase : EnemyBase
                 laserEndPoint = Player.position;
                 isAimingLaser = true; //레이저 조준 상태 (조준 딜레이 존재)
                                       //파티클 활성화로 곧 쏘겠다는 신호 보내기
-                LaserFireSignEmissionModule.enabled = true;
+                if(laserType == LaserType.Line) {
+                    LaserFireSignEmissionModule.enabled = true;
+                } else {
+                    LaserFireSign2EmissionModule.enabled = true;
+                }
                 audioSource.PlayOneShot(EnemyLaserShotSound);
                 //Debug.Log("laser fire soon");
             }
@@ -123,11 +149,7 @@ public abstract class EnemyLaserBase : EnemyBase
 
     public override void OnDormant()
     {
-        // 발사 종료
-        LaserTime = 0;
-        isFiringLaser = false;
-        LaserLine.enabled = false;
-        LaserFireEmissionModule.enabled = false;
+
     }
 
     public override void Die()
