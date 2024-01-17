@@ -2,43 +2,36 @@ using UnityEngine;
 
 public class EnemyBullet : MonoBehaviour
 {
-    public GameManager gameManager;
-    public float damage;
-    public float strength;
+    public GameManager GameManager;
+    public float Damage;
+    public float Strength;
 
     public void Awake()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        GameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     public void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            gameManager.DamageToPlayer(damage);
+            GameManager.DamageToPlayer(Damage);
         }
-
         else if (other.gameObject.CompareTag("Wall") || other.gameObject.CompareTag("Floor"))
         {
-            Destroy();
+            Destroy(gameObject);
         }
     }
 
     public void TakeDamage(float damage)
     {
-        if (strength <= damage)
+        if (Strength <= damage)
         {
-            Destroy();
+            Destroy(gameObject);
         }
         else
         {
-            strength = -damage;
+            Strength -= damage;
         }
-    }
-
-    public void Destroy()
-    {
-        print("destroy!!!");
-        Destroy(gameObject, 0f);
     }
 }

@@ -16,26 +16,24 @@ public class Grenade : Ammo
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, Radius);
         foreach (Collider collider in colliders)
-        {   
+        {
             float distance = Vector3.Distance(collider.ClosestPoint(transform.position), transform.position);
             float damage = (float)Math.Round((decimal)(Radius - distance) / (decimal)Radius * (decimal)Damage, 1);
             if (collider.CompareTag("Enemy"))
             {
                 EnemyBase enemy = collider.gameObject.GetComponent<EnemyBase>();
                 enemy.TakeDamage(damage);
-            } 
-            
-            else if (collider.CompareTag("EnemyBullet")) {
+            }
+            else if (collider.CompareTag("EnemyBullet"))
+            {
                 EnemyBullet enemyBullet = collider.gameObject.GetComponent<EnemyBullet>();
                 enemyBullet.TakeDamage(damage);
             }
-            if (collider.CompareTag("Player"))
-            {   
+            else if (collider.CompareTag("Player"))
+            {
                 GameManager.DamageToPlayer(damage);
-            } 
+            }
         }
-
-        
 
         if (colliders.Length > 0)
         {

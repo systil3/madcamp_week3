@@ -152,9 +152,10 @@ public class GameManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        GetComponent<AudioSource>().Stop();
         int kill = enemies.Count(e => e.Health.IsDead);
         LiveCanvas.gameObject.SetActive(false);
-        StatisticsText.text = $"Kill: {kill}\n\nDamage: {damage}\n\nHit Rate: {NumHit} / {NumShot} ({Math.Round(NumHit / (decimal)NumShot * 100, 1)}%)";
+        StatisticsText.text = $"Health: {PlayerHealth.CurrentHealth} / {PlayerHealth.MaxHealth}\n\nKill: {kill}\n\nDamage: {Math.Round(damage, 1)}\n\nHit Rate: {NumHit} / {NumShot} ({Math.Round(NumHit / (decimal)NumShot * 100, 1)}%)";
         StatisticsCanvas.gameObject.SetActive(true);
     }
 
@@ -172,6 +173,7 @@ public class GameManager : MonoBehaviour
         }
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        GetComponent<AudioSource>().Play();
     }
 
     public bool DamageToPlayer(float damage)

@@ -29,6 +29,7 @@ public abstract class EnemyBase : MonoBehaviour
     protected AIPath aiPath;
     protected CharacterController character;
 
+    bool alreadyDead = false;
     bool isTrackingByDamage = false;
     float elapsedToDormant = 0.0f;
     ParticleSystem dieEffect;
@@ -126,9 +127,10 @@ public abstract class EnemyBase : MonoBehaviour
     {
         Debug.Log($"Damage: {damage}");
         bool isDead = GameManager.DamageToEnemy(Health, damage);
-        if (isDead)
+        if (!alreadyDead && isDead)
         {
             currentState = EnemyState.Dead;
+            alreadyDead = true;
             Die();
         }
         else

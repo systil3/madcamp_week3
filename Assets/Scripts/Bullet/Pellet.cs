@@ -10,5 +10,10 @@ public class Pellet : Ammo
             enemy.TakeDamage(Damage);
             GameManager.NumHit++;
         }
+        else if (other.gameObject.CompareTag("EnemyBullet"))
+        {
+            EnemyBullet enemyBullet = other.gameObject.GetComponent<EnemyBullet>();
+            enemyBullet.TakeDamage(Damage);
+        }
     }
 }

@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class EnemyGround : EnemyBase
@@ -13,13 +12,13 @@ public class EnemyGround : EnemyBase
     public float TimeBetweenShots = 0.2f;
     public float NumberOfShots = 10;
     public float BulletLifeTime = 5;
-    public float elapsedTime = 100;
+    public float ElapsedTime = 100;
+    public float BulletForce = 20;
+    public float NumberOfBullets = 8;
 
-    private int shotCount = 0;
-    private float shotElapsedTime = 0;
-    public float bulletForce = 20;
-    public float numberOfBullets = 8;
-    private bool isShooting = false;
+    int shotCount = 0;
+    float shotElapsedTime = 0;
+    bool isShooting = false;
 
     public override void Awake()
     {
@@ -34,14 +33,14 @@ public class EnemyGround : EnemyBase
             Shot();
         }
 
-        if (elapsedTime > TimeBetweenPatterns)
+        if (ElapsedTime > TimeBetweenPatterns)
         {
-            elapsedTime = 0;
+            ElapsedTime = 0;
             isShooting = true;
         }
         else
         {
-            elapsedTime += Time.deltaTime;
+            ElapsedTime += Time.deltaTime;
         }
     }
 
@@ -49,35 +48,21 @@ public class EnemyGround : EnemyBase
     {
         // 1/5의 확률로 파괴가 불가능한 탄 생성
         // 4/5의 확률로 파괴가 가능한 탄 생성
-        print(shotCount);
         if (shotCount < NumberOfShots)
         {
-
             if (shotElapsedTime > TimeBetweenShots)
             {
-                for (int i = 0; i < numberOfBullets; i++)
+                for (int i = 0; i < NumberOfBullets; i++)
                 {
-                    float angle = math.PI * 2 * i / numberOfBullets;
-                    //Vector3 bulletDirection = new Vector3(math.cos(angle), 0, math.sin(angle));
-                    float bulletRandomValue = UnityEngine.Random.Range(0f, 1f);
-                    GameObject bullet;
+                    float angle = Mathf.PI * 2 * i / NumberOfBullets;
+                    float bulletRandomValue = Random.Range(0f, 1f);
 
-                    if (bulletRandomValue > 0.2f)
-                    {
-                        print(BulletWeak);
-                        bullet = Instantiate(BulletWeak, MuzzleTransform.position + Vector3.up * 0.5f, transform.rotation);
-                    }
-                    else
-                    {
-                        print(BulletStrong);
-                        bullet = Instantiate(BulletStrong, MuzzleTransform.position + Vector3.up * 0.5f, transform.rotation);
-                    }
-
+                    GameObject bullet = Instantiate(bulletRandomValue > 0.2f ? BulletWeak : BulletStrong, MuzzleTransform.position + Vector3.up * 0.5f, transform.rotation);
                     bullet.transform.RotateAround(bullet.transform.position, Vector3.up, angle);
-                    bullet.transform.forward = new Vector3(math.cos(angle), 0, math.sin(angle));
+                    bullet.transform.forward = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
 
                     Rigidbody brb = bullet.GetComponent<Rigidbody>();
-                    brb.AddForce(brb.transform.forward * bulletForce, ForceMode.Impulse);
+                    brb.AddForce(brb.transform.forward * BulletForce, ForceMode.Impulse);
                 }
                 shotElapsedTime = 0;
                 shotCount++;
@@ -86,7 +71,6 @@ public class EnemyGround : EnemyBase
             {
                 shotElapsedTime += Time.deltaTime;
             }
-
         }
         else
         {
@@ -95,9 +79,7 @@ public class EnemyGround : EnemyBase
         }
     }
 
-    public override void OnDormant() { 
-
-    }
+    public override void OnDormant() { }
 
     // 파티클이 트리거에 들어갈 때 호출되는 함수
     private void OnParticleCollision(GameObject other)
