@@ -42,3 +42,6 @@
   ![items](https://github.com/systil3/madcamp_week3/assets/115442017/75d49555-2e14-44b9-8f15-54934a09f1b8)
 
 - 클리어 혹은 사망 후 화면에 죽인 적 수, 데미지 총합, 총알 적중률이 화면에 표시됩니다.
+  
+- ![clear](https://github.com/systil3/madcamp_week3/assets/115442017/03c90ab0-786f-4c53-abaa-c07a38112fdf)
+
